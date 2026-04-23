@@ -1,0 +1,7 @@
+-- ============================================================================
+-- Smart Bet - Seed data
+-- ============================================================================
+-- This file is populated in step "4-seed" of the MVP plan with the catalog
+-- entries extracted from the user's real spreadsheet (sports, bet types,
+-- bookmakers, etc.).
+-- ============================================================================
