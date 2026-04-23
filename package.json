@@ -11,6 +11,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "type-check": "tsc --noEmit",
+    "db:types": "npx --yes supabase gen types typescript --project-id jlizdnlteihlliioxcri --schema public > src/types/supabase.ts",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -34,11 +35,13 @@
     "date-fns": "^4.1.0",
     "lucide-react": "^1.9.0",
     "next": "16.2.4",
+    "next-themes": "^0.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.73.1",
     "recharts": "^3.8.1",
     "shadcn": "^4.4.0",
+    "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tw-animate-css": "^1.4.0",
     "zod": "^4.3.6"

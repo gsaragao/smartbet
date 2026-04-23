@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-heading-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,6 +39,25 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* --- Smart Bet semantic tokens ------------------------------------- */
+  --color-win: var(--win);
+  --color-win-foreground: var(--win-foreground);
+  --color-win-muted: var(--win-muted);
+  --color-loss: var(--loss);
+  --color-loss-foreground: var(--loss-foreground);
+  --color-loss-muted: var(--loss-muted);
+  --color-pending: var(--pending);
+  --color-pending-foreground: var(--pending-foreground);
+  --color-pending-muted: var(--pending-muted);
+  --color-void: var(--void);
+  --color-void-foreground: var(--void-foreground);
+  --color-void-muted: var(--void-muted);
+
+  /* Brand accent — complements primary, used for highlights & alerts. */
+  --color-accent-brand: var(--accent-brand);
+  --color-accent-brand-foreground: var(--accent-brand-foreground);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -46,75 +65,160 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Shadows tinted with brand color — subtle, never flashy. */
+  --shadow-brand-xs: 0 1px 2px 0 oklch(from var(--primary) l c h / 0.08);
+  --shadow-brand-sm:
+    0 1px 2px 0 oklch(from var(--primary) l c h / 0.06),
+    0 2px 6px -2px oklch(from var(--primary) l c h / 0.08);
+  --shadow-brand-md:
+    0 2px 4px -1px oklch(from var(--primary) l c h / 0.08),
+    0 8px 16px -4px oklch(from var(--primary) l c h / 0.12);
+  --shadow-brand-lg:
+    0 4px 8px -2px oklch(from var(--primary) l c h / 0.1),
+    0 16px 32px -8px oklch(from var(--primary) l c h / 0.18);
 }
 
+/* =====================================================================
+   LIGHT THEME
+   ---------------------------------------------------------------------
+   Base: warm off-white (not pure white) — softer, less clinical.
+   Primary: deep emerald — communicates "profit" at a subconscious level,
+   shares hue with --win so win-states feel native to the brand.
+   ===================================================================== */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.99 0.003 160);             /* warm off-white */
+  --foreground: oklch(0.18 0.015 240);             /* near-black, slight blue */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.18 0.015 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.18 0.015 240);
+
+  /* Brand: deep, vivid emerald. WCAG-AA on white for body text & icons.
+     Chroma pushed to 0.19 so brand hits like brand, not like sage. */
+  --primary: oklch(0.5 0.19 160);
+  --primary-foreground: oklch(0.99 0.01 160);
+
+  --secondary: oklch(0.965 0.005 160);
+  --secondary-foreground: oklch(0.25 0.03 160);
+
+  --muted: oklch(0.965 0.005 160);
+  --muted-foreground: oklch(0.5 0.015 240);
+
+  --accent: oklch(0.955 0.02 160);
+  --accent-foreground: oklch(0.3 0.08 160);
+
+  --destructive: oklch(0.55 0.22 25);
+  --border: oklch(0.9 0.01 160);
+  --input: oklch(0.92 0.008 160);
+  --ring: oklch(0.5 0.19 160);
+
+  /* Domain semantic colors (light) — WCAG AA compliant on --background. */
+  --win: oklch(0.55 0.14 156);
+  --win-foreground: oklch(0.99 0.01 156);
+  --win-muted: oklch(0.95 0.04 156);
+  --loss: oklch(0.55 0.22 25);
+  --loss-foreground: oklch(0.99 0.01 25);
+  --loss-muted: oklch(0.95 0.04 25);
+  --pending: oklch(0.72 0.15 75);
+  --pending-foreground: oklch(0.2 0.05 75);
+  --pending-muted: oklch(0.96 0.04 75);
+  --void: oklch(0.55 0.02 260);
+  --void-foreground: oklch(0.99 0 0);
+  --void-muted: oklch(0.96 0.005 260);
+
+  /* Secondary brand accent — warm amber. Used sparingly for highlights. */
+  --accent-brand: oklch(0.72 0.15 75);
+  --accent-brand-foreground: oklch(0.2 0.05 75);
+
+  /* Data-viz charts — emerald, red, amber, blue, violet. Perceptually distinct. */
+  --chart-1: oklch(0.55 0.14 156);  /* win green */
+  --chart-2: oklch(0.55 0.22 25);   /* loss red */
+  --chart-3: oklch(0.72 0.15 75);   /* amber */
+  --chart-4: oklch(0.6 0.14 240);   /* blue */
+  --chart-5: oklch(0.55 0.15 300);  /* purple */
+
+  --radius: 0.75rem;
+
+  /* Sidebar uses a subtle tint of primary — not pure gray — so it feels
+     like part of the Smart Bet brand, not a neutral chrome. Active state
+     uses a more saturated tint so it reads "active" at a glance. */
+  --sidebar: oklch(0.98 0.008 160);
+  --sidebar-foreground: oklch(0.22 0.02 240);
+  --sidebar-primary: oklch(0.5 0.19 160);
+  --sidebar-primary-foreground: oklch(0.99 0.01 160);
+  --sidebar-accent: oklch(0.92 0.06 160);
+  --sidebar-accent-foreground: oklch(0.28 0.12 160);
+  --sidebar-border: oklch(0.9 0.01 160);
+  --sidebar-ring: oklch(0.5 0.19 160);
 }
 
+/* =====================================================================
+   DARK THEME
+   ---------------------------------------------------------------------
+   Key decision: NOT pure black. A dark graphite with a subtle blue tint
+   feels less "OLED off" and more "professional app at night". Primary
+   brightens so contrast stays legal on the darker surface.
+   ===================================================================== */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: oklch(0.18 0.012 240);             /* graphite, slight cool */
+  --foreground: oklch(0.97 0.005 160);
+  --card: oklch(0.22 0.014 240);                   /* raised surface */
+  --card-foreground: oklch(0.97 0.005 160);
+  --popover: oklch(0.22 0.014 240);
+  --popover-foreground: oklch(0.97 0.005 160);
+
+  /* Brand (dark): brighter, vivid emerald — passes AA on graphite. */
+  --primary: oklch(0.75 0.18 160);
+  --primary-foreground: oklch(0.15 0.04 160);
+
+  --secondary: oklch(0.28 0.015 240);
+  --secondary-foreground: oklch(0.97 0.005 160);
+
+  --muted: oklch(0.26 0.012 240);
+  --muted-foreground: oklch(0.7 0.015 240);
+
+  --accent: oklch(0.3 0.03 160);
+  --accent-foreground: oklch(0.85 0.1 160);
+
+  --destructive: oklch(0.72 0.2 25);
+  --border: oklch(0.97 0.005 160 / 8%);
+  --input: oklch(0.97 0.005 160 / 12%);
+  --ring: oklch(0.75 0.18 160);
+
+  /* Domain semantic colors (dark). */
+  --win: oklch(0.78 0.17 156);
+  --win-foreground: oklch(0.15 0.05 156);
+  --win-muted: oklch(0.3 0.08 156);
+  --loss: oklch(0.72 0.2 25);
+  --loss-foreground: oklch(0.15 0.05 25);
+  --loss-muted: oklch(0.3 0.1 25);
+  --pending: oklch(0.82 0.16 75);
+  --pending-foreground: oklch(0.15 0.05 75);
+  --pending-muted: oklch(0.32 0.08 75);
+  --void: oklch(0.72 0.02 260);
+  --void-foreground: oklch(0.15 0 0);
+  --void-muted: oklch(0.3 0.01 260);
+
+  --accent-brand: oklch(0.82 0.16 75);
+  --accent-brand-foreground: oklch(0.18 0.05 75);
+
+  --chart-1: oklch(0.78 0.17 156);
+  --chart-2: oklch(0.72 0.2 25);
+  --chart-3: oklch(0.82 0.16 75);
+  --chart-4: oklch(0.72 0.15 240);
+  --chart-5: oklch(0.72 0.17 300);
+
+  /* Sidebar: slightly darker than background to "sink" visually, with a
+     subtle brand tint so it reads as chrome, not content. */
+  --sidebar: oklch(0.16 0.012 240);
+  --sidebar-foreground: oklch(0.97 0.005 160);
+  --sidebar-primary: oklch(0.75 0.17 160);
+  --sidebar-primary-foreground: oklch(0.15 0.04 160);
+  --sidebar-accent: oklch(0.28 0.06 160);
+  --sidebar-accent-foreground: oklch(0.92 0.12 160);
+  --sidebar-border: oklch(0.97 0.005 160 / 6%);
+  --sidebar-ring: oklch(0.75 0.17 160);
 }
 
 @layer base {
@@ -122,9 +226,104 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings:
+      'cv11',
+      'ss01';
   }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Headings use Space Grotesk — geometric, confident, slightly technical.
+     Pairs with Geist for body the same way Inter+IBM Plex pair in fintech. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-heading {
+    font-family: var(--font-heading, var(--font-geist-sans));
+    font-feature-settings:
+      'ss01',
+      'ss02',
+      'cv11';
+    letter-spacing: -0.015em;
+  }
+
+  /* Tabular numerals for money/odds — critical for betting UI readability. */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Default focus-visible treatment across the app. */
+  :focus-visible {
+    @apply outline-ring outline-2 outline-offset-2;
+  }
+
+  /* Respect the user's reduced-motion preference. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Selection uses brand tint — small detail, reinforces identity. */
+  ::selection {
+    background: oklch(from var(--primary) l c h / 0.2);
+    color: inherit;
+  }
+}
+
+@layer utilities {
+  .container-wide {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+  .container-narrow {
+    @apply mx-auto w-full max-w-3xl px-4 sm:px-6;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Subtle dot grid — used on auth hero, empty dashboards, section backgrounds.
+     Mask fades to transparent so it never competes with foreground content. */
+  .bg-dot-grid {
+    background-image: radial-gradient(
+      oklch(from var(--foreground) l c h / 0.08) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+  }
+
+  /* Ambient brand glow — large, soft, used behind hero sections and KPIs
+     to give the UI a subtle "light source". Never on interactive elements. */
+  .brand-glow {
+    background:
+      radial-gradient(
+        60% 60% at 20% 0%,
+        oklch(from var(--primary) l c h / 0.12) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        50% 50% at 100% 100%,
+        oklch(from var(--accent-brand) l c h / 0.08) 0%,
+        transparent 55%
+      );
+  }
+
+  /* Subtle inset ring used on premium cards (KPIs, hero widgets). */
+  .ring-brand-soft {
+    box-shadow:
+      inset 0 0 0 1px oklch(from var(--primary) l c h / 0.12),
+      var(--shadow-brand-sm);
   }
 }

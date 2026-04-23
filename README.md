@@ -1,25 +1,75 @@
 # Smart Bet
 
-Sistema pessoal de gestão e análise inteligente de apostas esportivas. Cada aposta é registrada dentro de uma **estratégia nomeada**, permitindo medir objetivamente o que funciona e o que destrói a banca.
+Sistema pessoal de **gestão e análise inteligente de apostas esportivas**. Cada aposta é registrada dentro de uma **estratégia nomeada** com regras parametrizadas, permitindo medir objetivamente o que funciona, o que destrói a banca, e — futuramente — automatizar a tomada de decisão com sinais ao vivo.
 
-## Visão do produto
+> Nasceu para resolver a dor real de quem aposta com método e tenta controlar tudo em planilhas: ROI por estratégia, hit rate, drawdown, streaks, EV+ e Kelly — sem importar CSV no Excel toda noite.
 
-- **Fase 1 (MVP)** – Registro manual, controle de banca, dashboard analítico por estratégia.
-- **Fase 2** – Coleta semiautomática de jogos da próxima rodada.
-- **Fase 3** – Estatísticas ao vivo + motor de regras (filtros Odd → Tempo → Estatística → EV+) com notificações push/WhatsApp.
-- **Fase 4** – Execução (semi)automatizada de apostas a partir das notificações.
+---
 
-## Stack
+## Visão do produto (roadmap por fases)
 
-- **Framework**: Next.js 16 (App Router) + React 19 + TypeScript
-- **Estilização**: Tailwind CSS v4 + shadcn/ui (preset base-nova, paleta neutral)
-- **Backend / DB**: Supabase (PostgreSQL + Auth + RLS + Realtime + Storage)
-- **Estado servidor**: TanStack Query
-- **Formulários**: React Hook Form + Zod
-- **Gráficos**: Recharts
-- **Ícones**: lucide-react
-- **Utilitários**: date-fns, clsx, tailwind-merge
-- **Qualidade**: ESLint + Prettier + Husky + lint-staged
+| Fase | Escopo | Status |
+|---|---|---|
+| **1 — MVP** | Registro manual de apostas, controle de banca, estratégias com regras (AST) e dashboard analítico | ✅ Em andamento |
+| **2** | Coleta semiautomática de jogos da próxima rodada (scraping/feed) | ⏳ Planejado |
+| **3** | Estatísticas ao vivo (estilo FlashScore) + motor de regras `Odd → Tempo → Estatística → EV+` + notificações push/WhatsApp | ⏳ Planejado |
+| **4** | Execução semiautomatizada de apostas a partir das notificações | ⏳ Planejado |
+
+### O que já está implementado (Fase 1)
+
+- **Autenticação** — login, registro e logout via Supabase Auth com proteção por middleware e RLS por `auth.uid()`.
+- **Admin** — CRUDs de Esportes, Países, Ligas, Times e Tipos de Aposta (somente admin), com soft-delete e filtros.
+- **Banca** — múltiplas bancas por usuário, eventos transacionais (depósito, saque, ajuste, **aposta**), saldo recalculado por trigger no banco.
+- **Estratégias** — CRUD com wizard de 4 passos (Identidade · Escopo · Gestão · Regras), método de stake configurável (livre, fixo, percentual, progressão, Kelly), regras como AST avaliável (`AND`/`OR`/condições), guardrails (drawdown, reds consecutivos, yield mínimo) e versionamento automático das regras.
+- **Apostas** — registro de apostas **simples** e **múltiplas**, validação bloqueante contra as regras da estratégia (com override explícito + motivo), resolução transacional (`ganha`, `perdida`, `meio_green`, `meio_red`, `anulada`, `cashout`) que atualiza simultaneamente `apostas`, `apostas_selecoes`, `eventos_banca` e `estrategias_progresso`.
+- **Dashboard** — visão geral com banca consolidada, ROI, hit rate, apostas no mês, atividade recente e atalhos por área.
+
+---
+
+## Stack técnica
+
+| Camada | Tecnologia |
+|---|---|
+| **Framework** | Next.js 16 (App Router) + React 19 + TypeScript |
+| **UI / Estilo** | Tailwind CSS v4 + shadcn/ui (preset `base-nova`, paleta neutral) + `@base-ui/react` |
+| **Backend / DB** | Supabase (PostgreSQL + Auth + RLS + Realtime + Storage) |
+| **Estado servidor** | React Server Components + Server Actions + `React.cache` para deduplicação |
+| **Estado cliente** | TanStack Query (cache de queries reativas) |
+| **Formulários** | React Hook Form + Zod (mesmos schemas no client e no server) |
+| **Gráficos** | Recharts |
+| **Ícones** | lucide-react |
+| **Datas / utils** | date-fns, clsx, tailwind-merge |
+| **Qualidade** | ESLint + Prettier + Husky + lint-staged |
+| **Notificações UI** | Sonner |
+| **Deploy alvo** | Vercel (frontend) + Supabase Cloud (backend) |
+
+---
+
+## Arquitetura
+
+### Princípios
+
+1. **Server-first**. Toda página inicia em RSC, busca dados via `React.cache` (deduplica chamadas no mesmo render) e só "hidrata" para Client Component nos pontos interativos (forms, dialogs, filtros).
+2. **Mutations via Server Actions** com `revalidatePath` cirúrgico — sem `useSWR` para revalidar listagens.
+3. **Validação dupla com Zod** — o mesmo schema valida no form (preview imediato) e no Server Action (defesa em profundidade).
+4. **Transações no banco**, não no app. Operações compostas (criar aposta, resolver aposta, reabrir aposta) ficam em `RPC SECURITY DEFINER` que valida `auth.uid()` antes de qualquer write — assim não há janela de inconsistência entre `apostas` ↔ `eventos_banca` ↔ `estrategias_progresso`.
+5. **RLS sempre ligada**. Políticas separadas por operação (`select`/`insert`/`update`/`delete`) usando `(select auth.uid()) = usuario_id`.
+6. **Domain-first naming em PT-BR** no banco (`apostas`, `bancas`, `estrategias`, `eventos_banca`) — espelha o dia a dia de quem usa.
+
+### Fluxo de uma aposta resolvida
+
+```mermaid
+flowchart LR
+  UI[BetResolveDialog] -->|Server Action| Action[resolverAposta]
+  Action -->|RPC| RPC["fn_resolver_aposta (SECURITY DEFINER)"]
+  RPC --> Apostas[(apostas + selecoes)]
+  RPC --> Evt[(eventos_banca tipo='aposta')]
+  RPC --> Prog[(estrategias_progresso)]
+  Evt -->|trigger| Bancas[(bancas.saldo_atual)]
+  Action -->|revalidatePath| Pages["/bets, /banca, /strategies, /dashboard"]
+```
+
+---
 
 ## Estrutura de pastas
 
@@ -27,33 +77,69 @@ Sistema pessoal de gestão e análise inteligente de apostas esportivas. Cada ap
 smart-bet/
 ├── src/
 │   ├── app/
-│   │   ├── (auth)/            # rotas de autenticação (login / registro)
-│   │   └── (app)/             # rotas autenticadas (dashboard, bets, etc.)
+│   │   ├── (auth)/                     # rotas públicas (login, registro)
+│   │   └── (app)/                      # rotas autenticadas
+│   │       ├── dashboard/              # visão geral
+│   │       ├── banca/                  # CRUD de bancas + eventos financeiros
+│   │       ├── strategies/             # CRUD de estratégias + wizard + regras
+│   │       ├── bets/                   # CRUD de apostas + resolução + filtros
+│   │       └── admin/                  # catálogos globais (esportes, ligas, times, tipos)
 │   ├── components/
-│   │   ├── ui/                # componentes shadcn/ui
-│   │   ├── charts/            # wrappers de Recharts
-│   │   ├── forms/             # BetForm, StrategyForm, etc.
-│   │   └── tables/            # data tables
+│   │   ├── ui/                         # primitivos (shadcn/ui)
+│   │   ├── ui-kit/                     # blocos reutilizáveis (StatusBadge, EmptyState)
+│   │   ├── dashboard/                  # StatCard, etc.
+│   │   ├── layout/                     # PageHeader, NavSidebar, etc.
+│   │   └── providers/                  # ThemeProvider, QueryProvider
+│   ├── features/                       # feature-folders com camada de dados isolada
+│   │   ├── admin/                      # (esportes|paises|ligas|times|tipos-aposta)
+│   │   ├── banca/                      # queries.ts, actions.ts, schema.ts
+│   │   ├── strategies/                 # idem + rules-catalog.ts (AST)
+│   │   ├── bets/                       # idem + rules-evaluator.ts + resolver.ts
+│   │   └── dashboard/                  # query agregada
 │   ├── lib/
-│   │   ├── supabase/          # clients (browser / server / middleware)
-│   │   ├── metrics/           # ROI, hit rate, drawdown, curva de banca, etc.
-│   │   ├── stake/             # calcNextStake, progressão, Kelly, etc.
-│   │   ├── validators/        # schemas Zod
-│   │   └── utils.ts
-│   ├── hooks/
+│   │   ├── supabase/                   # clients (browser / server / middleware)
+│   │   ├── auth/                       # requireAuth, requireAdmin
+│   │   ├── format.ts                   # formatMoney, formatPercent, formatDateTime
+│   │   ├── slug.ts
+│   │   └── env.ts
+│   ├── middleware.ts                   # gestão de sessão Supabase + proteção de rotas
 │   └── types/
+│       └── supabase.ts                 # tipos gerados via `supabase gen types`
 ├── supabase/
-│   ├── migrations/            # SQL versionado do schema
-│   └── seed.sql
+│   └── migrations/                     # 28 migrations versionadas (schema + RLS + RPCs)
 └── public/
 ```
+
+> **Convenção:** cada feature em `src/features/<dominio>/` exporta `queries.ts` (RSC, com `React.cache`), `actions.ts` (Server Actions), `schema.ts` (Zod) e arquivos auxiliares de domínio. Components vivem em `src/app/(app)/<rota>/_components/`.
+
+---
+
+## Modelagem do banco (alto nível)
+
+| Tabela | Papel |
+|---|---|
+| `perfis` | Espelho de `auth.users` com role (`admin`/`user`) |
+| `esportes`, `paises`, `ligas`, `times`, `tipos_aposta` | Catálogos globais |
+| `bancas` | Múltiplas bancas por usuário (saldo inicial/atual, moeda, casa) |
+| `eventos_banca` | Trilha de auditoria (deposito/saque/ajuste/aposta) — trigger atualiza `bancas.saldo_atual` |
+| `estrategias` | Estratégia com regras (`regras_jsonb` como AST), método de stake, escopo, guardrails |
+| `estrategias_tipos_aposta`, `estrategias_ligas` | Junções N:N |
+| `estrategias_regras_versoes` | Versionamento automático quando `regras_jsonb` muda |
+| `estrategias_progresso` | Snapshot por estratégia (passo atual, streaks, lucro acumulado) |
+| `partidas` | Híbrido: aceita FK de times **ou** nomes livres (modo MVP) |
+| `apostas`, `apostas_selecoes` | Aposta principal + N seleções (suporta múltipla) |
+
+Enums chave: `status_aposta` (pendente/ganha/perdida/anulada/cashout/meio_green/meio_red), `formato_aposta` (simples/multipla/sistema), `metodo_stake` (livre/fixo/percentual/progressao/kelly), `tipo_evento_banca` (saldo_inicial/deposito/saque/ajuste/**aposta**).
+
+---
 
 ## Setup local
 
 ### 1. Pré-requisitos
 
-- Node.js **20 ou superior** (testado em 24.x)
-- npm 10+ (testado em 11.x)
+- **Node.js 20+** (testado em 24.x)
+- **npm 10+** (testado em 11.x)
+- **Conta Supabase** (Cloud) — o projeto usa o Supabase já provisionado em `jlizdnlteihlliioxcri` (definido em `package.json` no script `db:types`)
 
 ### 2. Instalar dependências
 
@@ -61,63 +147,111 @@ smart-bet/
 npm install
 ```
 
+O `prepare` script instala automaticamente os hooks do Husky.
+
 ### 3. Variáveis de ambiente
 
 ```bash
 cp .env.example .env.local
 ```
 
-Preencha `.env.local` com as credenciais do projeto Supabase (serão criadas no próximo passo do plano, passo `2-supabase`).
+Preencha com as credenciais do seu projeto Supabase:
 
-### 4. Rodar em desenvolvimento
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=   # apenas para scripts admin / seeds
+```
+
+### 4. Aplicar migrations no Supabase
+
+As 28 migrations em `supabase/migrations/` são aditivas e ordenadas. Use o Supabase CLI ou o MCP equivalente. Em ambiente novo:
+
+```bash
+npx supabase link --project-ref <seu-project-ref>
+npx supabase db push
+```
+
+### 5. Rodar em desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-O app sobe em http://localhost:3000 com Turbopack.
+App sobe em http://localhost:3000 com Turbopack.
+
+### 6. Login inicial
+
+O seed cria um usuário admin: **`admin@smartbet.com`** / **`admin123`**.
+
+---
 
 ## Scripts disponíveis
 
-| Script                 | O que faz                                 |
-| ---------------------- | ----------------------------------------- |
-| `npm run dev`          | Ambiente de desenvolvimento com Turbopack |
-| `npm run build`        | Build de produção                         |
-| `npm start`            | Executa o build de produção               |
-| `npm run lint`         | ESLint                                    |
-| `npm run lint:fix`     | ESLint com correção automática            |
-| `npm run format`       | Prettier em todos os arquivos             |
-| `npm run format:check` | Verifica formatação sem alterar arquivos  |
-| `npm run type-check`   | TypeScript sem emitir arquivos            |
+| Script | O que faz |
+|---|---|
+| `npm run dev` | Ambiente de desenvolvimento (Turbopack) |
+| `npm run build` | Build de produção |
+| `npm start` | Executa o build de produção |
+| `npm run lint` | ESLint |
+| `npm run lint:fix` | ESLint com correção automática |
+| `npm run format` | Prettier em todos os arquivos |
+| `npm run format:check` | Verifica formatação sem alterar |
+| `npm run type-check` | `tsc --noEmit` |
+| `npm run db:types` | Regenera `src/types/supabase.ts` a partir do schema remoto |
+
+---
 
 ## Qualidade de código
 
-- **ESLint** com config do Next.js.
-- **Prettier** + plugin Tailwind (ordena classes automaticamente).
-- **Husky** roda `lint-staged` no `pre-commit`: corrige e formata apenas os arquivos modificados.
+- **ESLint** com config do Next.js + regras de hooks.
+- **Prettier** + `prettier-plugin-tailwindcss` (ordena classes automaticamente).
+- **Husky** + **lint-staged** rodam no `pre-commit`: ESLint `--fix` + Prettier `--write` apenas nos arquivos modificados.
+- **Type-check** rigoroso (`strict: true`) e `next build` sem warnings.
 
-## Roadmap de implementação (MVP)
+---
 
-Os passos seguem o plano em `.cursor/plans/`. Resumo:
+## Conceitos do produto
 
-1. Scaffold do projeto (feito neste passo).
-2. Projeto Supabase + cliente + Auth.
-3. Schema com RLS + triggers de banca.
-4. Seed do catálogo baseado na planilha real.
-5. Tipos TypeScript + validators Zod.
-6. Layout autenticado.
-7. Settings (saldo inicial, moeda, timezone).
-8. CRUDs de catálogo.
-9. CRUD de estratégias (com `stake_method` e `stake_config`).
-10. CRUD de partidas.
-11. Form de apostas (simples/múltipla, freebet, cashout).
-12. Módulo `lib/metrics` com testes.
-13. Módulo `lib/stake` com testes.
-14. Tela de banca (extrato + ajustes).
-15. Tela de projeção (simulador "e se").
-16. Dashboard (KPIs + gráficos).
-17. Polimento de UX (loading/empty/error, responsividade, dark mode).
-18. Deploy Vercel + Supabase Cloud.
+### Estratégia
+
+Uma estratégia é um conjunto de **regras avaliáveis** que definem quando vale entrar em uma aposta. Exemplo:
+
+```
+"Ambas Marcam (BTTS Sim) — pre-live, futebol":
+  btts_historico_ambos >= 60%
+  AND media_gols_time_casa >= 1.2
+  AND media_gols_time_fora >= 1.1
+Stake: percentual de 2% do saldo atual da banca
+```
+
+A estratégia também guarda **escopo** (esporte, ligas, tipos de aposta permitidos, faixa de odd, contexto pre-live/ao-vivo, minuto mínimo) e **guardrails** (drawdown alerta, reds consecutivos, yield mínimo, lembrete de revisão).
+
+### Validação bloqueante
+
+Ao registrar uma aposta dentro de uma estratégia, o sistema:
+
+1. Avalia as regras da estratégia contra o contexto da aposta (odd, liga, tipo, etc).
+2. Se alguma regra violar → **bloqueia** o submit e mostra um banner com as violações.
+3. Permite **override explícito** ("registrar fora do escopo") com motivo obrigatório, marcando a aposta com `estrategia_override = true` para análise futura.
+
+A mesma lógica roda no client (preview imediato) e no server (defesa).
+
+### Resolução transacional
+
+Resolver uma aposta dispara um único RPC `SECURITY DEFINER` que:
+
+1. Atualiza `apostas` (status, lucro, retorno, resolvida_em) e `apostas_selecoes` em cascata.
+2. Insere um `eventos_banca` do tipo `aposta` com o lucro/prejuízo — trigger atualiza `bancas.saldo_atual` automaticamente.
+3. Recalcula `estrategias_progresso` (passo atual, streaks, totais, lucro acumulado) lendo `metodo_stake`.
+
+A operação é atômica: se algo falhar, nada é gravado.
+
+### Apostas múltiplas
+
+Múltiplas com 2+ seleções têm `odd_total` validado por trigger contra o produto das odds (tolerância 0.01). O status agregado da múltipla é recalculado por trigger sempre que o status de uma seleção muda — qualquer `perdida` derruba a aposta inteira; só vira `ganha` quando todas as seleções são `ganha`/`anulada`.
+
+---
 
 ## Licença
 
