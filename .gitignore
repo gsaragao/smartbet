@@ -49,3 +49,7 @@ supabase/.branches/
 .idea/
 .vscode/
 Thumbs.db
+
+# Local-only (não versionar no GitHub)
+/scripts/
+/skills/
