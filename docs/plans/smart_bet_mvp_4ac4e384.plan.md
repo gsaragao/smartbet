@@ -7,19 +7,19 @@ todos:
     status: completed
   - id: 2-supabase
     content: Criar projeto Supabase, configurar cliente (client/server/middleware), Auth (login/registro/logout) e proteger rotas (app)
-    status: pending
+    status: completed
   - id: 3-schema
     content: 'Migrations do schema completo: sports, countries, leagues, teams, bet_types, bookmakers, strategies (com stake_method e stake_config), strategy_progress, matches, bets (com outcome estendido, is_free_bet, legs_won/lost), bet_legs, bankroll_events, user_settings — todos com RLS + triggers de banca + trigger de progressão'
-    status: pending
+    status: completed
   - id: 4-seed
     content: 'Seed rico extraído da planilha real: Futebol como esporte, 20+ bet_types (Match Odd, DNB, Dupla Chance, Ambas Marcam, Over/Under 0.5/1.5/2.5/3.5/4.5, Handicap Europeu, Handicap Asiático, Gols Asiáticos, Match Odd+Both Score, Match Odd+Gols, Resultado Exato, Cartões, 2/1, Double Chance), principais casas de apostas BR'
     status: pending
   - id: 5-types
     content: Gerar tipos TypeScript do Supabase e criar schemas Zod correspondentes em lib/validators
-    status: pending
+    status: completed
   - id: 6-layout
     content: Construir layout autenticado (sidebar + header + breadcrumbs) com navegação para todas as seções
-    status: pending
+    status: completed
   - id: 7-settings
     content: 'Tela de Settings: saldo inicial, moeda, timezone; onboarding para primeiro acesso'
     status: pending
@@ -28,13 +28,13 @@ todos:
     status: pending
   - id: 9-strategies
     content: 'CRUD de Strategies com seletor de stake_method (fixed/progression/percent_bankroll) e editor específico de stake_config (ex.: array editável de sequência de progressão, % da banca, valor fixo) + página de detalhe com métricas e strategy_progress'
-    status: pending
+    status: completed
   - id: 10-matches
     content: 'CRUD de Matches (form: liga, times, data, status, placar FT e HT)'
     status: pending
   - id: 11-bets
     content: 'Form avançado de Bets: escolher estratégia (auto-preenche stake via calcNextStake, editável), toggle simples/múltipla, adicionar N legs dinâmicas, flags is_free_bet e cashout, cálculo automático de total_odd/potential_return, integração com triggers de banca e progressão'
-    status: pending
+    status: completed
   - id: 12-metrics
     content: 'Módulo lib/metrics completo: ROI, hit rate, yield, drawdown, curva de banca, profit por grupo, pior/melhor sequência, freeBetProfit, multipleOutcome XcYe — todos com testes unitários'
     status: pending
@@ -43,7 +43,7 @@ todos:
     status: pending
   - id: 13-bankroll
     content: 'Tela Bankroll: extrato de bankroll_events com filtros + ações manuais de depósito/saque/ajuste'
-    status: pending
+    status: completed
   - id: 13b-projection
     content: 'Tela Projeção: simulador e-se (banca, % ou stake fixo, odd média, hit rate, nº apostas) com gráfico de evolução projetada'
     status: pending
@@ -57,6 +57,35 @@ todos:
     content: Deploy Vercel + variáveis de ambiente, conectar Supabase Cloud, smoke test end-to-end e README final
     status: pending
 isProject: false
+---
+
+## To-dos do MVP (18 itens — checklist)
+
+Use esta lista no dia a dia (GitHub, VS Code, ou qualquer leitor Markdown). Os mesmos itens existem no **YAML** `todos:` no topo do arquivo para o Cursor.
+
+**Legenda:** `[x]` concluído no código atual · `[ ]` ainda falta ou está só parcial (detalhe entre parênteses).
+
+1. [x] **1-setup** — Inicializar projeto Next.js 16 + TS + Tailwind v4 + shadcn/ui, configurar ESLint/Prettier/Husky + lint-staged, criar estrutura de pastas, `.env.example`, `.gitattributes` e git local com primeiro commit.
+2. [x] **2-supabase** — Criar projeto Supabase, configurar cliente (client/server/middleware), Auth (login/registro/logout) e proteger rotas (app).
+3. [x] **3-schema** — Migrations do schema completo (no repo: nomes em PT-BR equivalentes a sports/countries/leagues/teams/bet_types/strategies/strategy_progress/matches/bets/bet_legs/bankroll_events, etc.) com RLS + triggers de banca + progressão/apostas via RPCs.
+4. [ ] **4-seed** — Seed rico extraído da planilha real: Futebol, 20+ `tipos_aposta`, casas BR (hoje: seeds parciais; expandir ao nível do plano).
+5. [x] **5-types** — Gerar tipos TypeScript do Supabase e schemas Zod (hoje em `src/features/*/schema.ts`; o plano citava `lib/validators` — alinhado conceitualmente).
+6. [x] **6-layout** — Layout autenticado (sidebar + header + navegação); breadcrumbs onde fizer sentido.
+7. [ ] **7-settings** — Tela de Settings: saldo inicial, moeda, timezone; onboarding primeiro acesso.
+8. [ ] **8-catalog** — CRUDs de catálogo: admin com esportes, países, ligas, times, tipos de aposta **(parcial: falta entidade `bookmakers` + CRUD; casa como texto em aposta/banca).**
+9. [x] **9-strategies** — CRUD de estratégias com `stake_method`, `stake_config`, regras, progresso e página de detalhe.
+10. [ ] **10-matches** — CRUD de partidas dedicado (liga, times, data, status, placar FT/HT) **(parcial: PartidaPicker + fluxo em apostas; sem `/matches` central).**
+11. [x] **11-bets** — Form avançado de apostas: estratégia, simples/múltipla, legs, freebet/cashout, odd total, integração banca/progresso (RPCs).
+12. [ ] **12-metrics** — Módulo `lib/metrics`: ROI, hit rate, yield, drawdown, curva de banca, profit por grupo, sequências, freebet/múltipla XcYe — **com testes unitários.**
+13. [ ] **12b-stake** — Módulo `lib/stake`: `calcNextStake` e `advanceProgression` — **com testes** e UX explícita de sugestão de stake no form.
+14. [x] **13-bankroll** — Tela banca: extrato `eventos_banca` + depósito/saque/ajuste (rota `/banca`).
+15. [ ] **13b-projection** — Tela Projeção: simulador “e se” com gráfico de evolução projetada.
+16. [ ] **14-dashboard** — Dashboard completo: KPIs + curva de banca + lucro por estratégia/tipo/liga + últimas 15 apostas **(parcial: KPIs e resumo real; faltam gráficos/tabela do plano).**
+17. [ ] **15-polish** — Revisão de UX (loading/empty/error), responsividade, a11y, dark mode **(parcial: já há padrões no app; revisão final pendente).**
+18. [ ] **16-deploy** — Deploy Vercel + env, Supabase Cloud, smoke E2E, README de operação.
+
+**Resumo:** 9 concluídos · 9 abertos (vários com entrega parcial anotada). Atualize os `[x]` / `[ ]` acima quando fechar cada item, e sincronize o `status:` no YAML se usar automação do Cursor.
+
 ---
 
 # Smart Bet — Plano de Desenvolvimento
