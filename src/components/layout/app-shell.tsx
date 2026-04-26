@@ -5,6 +5,7 @@ import * as React from 'react';
 import { MobileNav } from '@/components/layout/mobile-nav';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Topbar } from '@/components/layout/topbar';
+import { UserProvider } from '@/components/providers/user-context';
 import type { Papel } from '@/lib/auth/profile';
 
 type AppShellProps = {
@@ -46,7 +47,9 @@ export function AppShell({ user, children }: AppShellProps) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar user={user} onMobileMenuToggle={() => setMobileOpen(true)} />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          <UserProvider papel={user.papel}>{children}</UserProvider>
+        </main>
       </div>
     </div>
   );

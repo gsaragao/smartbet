@@ -5,11 +5,13 @@ import Link from 'next/link';
 import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { useUser } from '@/components/providers/user-context';
 import type { RegistroOptions } from '@/features/bets/queries';
 
 import { BetDialog } from './bet-dialog';
 
 export function EmptyState({ options }: { options: RegistroOptions }) {
+  const { canWrite } = useUser();
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -30,6 +32,7 @@ export function EmptyState({ options }: { options: RegistroOptions }) {
       </div>
 
       <div className="flex flex-col items-center gap-3 sm:flex-row">
+        {canWrite && (
         <Button
           onClick={() => setOpen(true)}
           className="gap-1.5"
@@ -38,6 +41,7 @@ export function EmptyState({ options }: { options: RegistroOptions }) {
           <Plus className="size-4" />
           Registrar primeira aposta
         </Button>
+        )}
         <Link
           href="/strategies"
           className="text-muted-foreground hover:text-foreground text-sm underline underline-offset-4"

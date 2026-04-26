@@ -4,11 +4,13 @@ import { Plus, Sparkles, Target } from 'lucide-react';
 import * as React from 'react';
 
 import type { WizardOptions } from '@/features/strategies/queries';
+import { useUser } from '@/components/providers/user-context';
 
 import { StrategyDialog } from './strategy-dialog';
 import { TemplatePicker } from './template-picker';
 
 export function EmptyState({ options }: { options: WizardOptions }) {
+  const { canWrite } = useUser();
   const [createOpen, setCreateOpen] = React.useState(false);
   const [pickerOpen, setPickerOpen] = React.useState(false);
 
@@ -29,6 +31,7 @@ export function EmptyState({ options }: { options: WizardOptions }) {
       </div>
 
       <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
+        {canWrite && (
         <button
           type="button"
           onClick={() => setCreateOpen(true)}
@@ -64,6 +67,7 @@ export function EmptyState({ options }: { options: WizardOptions }) {
             Ver templates →
           </span>
         </button>
+        )}
       </div>
 
       <StrategyDialog

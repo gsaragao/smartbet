@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { requireAuth } from '@/lib/auth/profile';
+import { requireAuth, requireExecutor } from '@/lib/auth/profile';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
@@ -125,7 +125,9 @@ async function syncJuncoes(
 export async function criarEstrategia(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
-  const profile = await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
+  const profile = authResult;
 
   const parsed = strategyInputSchema.safeParse(input);
   if (!parsed.success) {
@@ -179,7 +181,9 @@ export async function criarEstrategia(
 export async function atualizarEstrategia(
   input: unknown,
 ): Promise<ActionResult> {
-  const profile = await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
+  const profile = authResult;
 
   const parsed = strategyUpdateSchema.safeParse(input);
   if (!parsed.success) {
@@ -227,7 +231,8 @@ async function mudarStatus(
   id: string,
   status: Database['public']['Enums']['status_estrategia'],
 ): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();
@@ -261,7 +266,8 @@ export async function arquivarEstrategia(id: string) {
 // ---------------------------------------------------------------------------
 
 export async function excluirEstrategia(id: string): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();
@@ -290,7 +296,9 @@ export async function duplicarEstrategia(
   id: string,
   opcoes: { comoAB: boolean } = { comoAB: false },
 ): Promise<ActionResult<{ id: string }>> {
-  const profile = await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
+  const profile = authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();

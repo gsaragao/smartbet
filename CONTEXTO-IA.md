@@ -4,7 +4,7 @@
 
 **Não commite segredos.** Variáveis sensíveis ficam em `.env.local` (já no `.gitignore`). Detalhes técnicos de stack e setup: `README.md`.
 
-**Plano MVP (cópia versionada no repo):** `docs/plans/smart_bet_mvp_4ac4e384.plan.md` — espelho do plano Cursor; o frontmatter YAML pode estar **desatualizado** (vários itens ainda como `pending`). Para continuar o MVP, use a **seção “MVP 9/14”** abaixo + o código como fonte de verdade. O arquivo original no disco pode permanecer em `C:\Users\Juan\.cursor\plans\smart_bet_mvp_4ac4e384.plan.md`.
+**Plano MVP (cópia versionada no repo):** `docs/plans/smart_bet_mvp_4ac4e384.plan.md` — espelho do plano Cursor; o frontmatter YAML pode estar **desatualizado** (vários itens ainda como `pending`). Para continuar o MVP, use a **seção "MVP 9/14"** abaixo + o código como fonte de verdade.
 
 ---
 
@@ -89,7 +89,7 @@ Legenda: concluído = entregue de forma suficiente para uso; pendente = ainda fa
 | Estratégias                                         | Wizard, AST, stake methods, guardrails, versões de regras, progresso                                                                                                                        |
 | Apostas                                             | S1 CRUD, S2 resolução RPC, S3 múltipla + filtros + CSV                                                                                                                                      |
 | Dashboard                                           | KPIs e dados reais (`obterDashboardOverview`, `force-dynamic`); **sem** todos os gráficos/tabela “últimas 15” do plano                                                                      |
-| Skills **no seu PC** (UX, React, Cursor, marketing) | `C:\Users\Juan\.agents\skills\`, `C:\Users\Juan\.cursor\skills-cursor\` — lista em `docs/SKILLS-AMBIENTE.md` (pastas `skills/` e `scripts/` na raiz são **locais** e estão no `.gitignore`) |
+| Skills **no seu PC** (UX, React, Cursor, marketing) | `C:\Users\<SEU-USUARIO>\.agents\skills\`, `C:\Users\<SEU-USUARIO>\.cursor\skills-cursor\` — lista em `docs/SKILLS-AMBIENTE.md` (pastas `skills/` e `scripts/` na raiz são **locais** e estão no `.gitignore`) |
 
 ---
 

@@ -1026,7 +1026,7 @@ export type Database = {
     Enums: {
       formato_aposta: "simples" | "multipla" | "sistema"
       metodo_stake: "fixo" | "percentual" | "progressao" | "kelly" | "livre"
-      papel_usuario: "admin" | "usuario"
+      papel_usuario: "admin" | "executor" | "consulta" | "usuario"
       status_aposta:
         | "pendente"
         | "ganha"
@@ -1171,7 +1171,7 @@ export const Constants = {
     Enums: {
       formato_aposta: ["simples", "multipla", "sistema"],
       metodo_stake: ["fixo", "percentual", "progressao", "kelly", "livre"],
-      papel_usuario: ["admin", "usuario"],
+      papel_usuario: ["admin", "executor", "consulta", "usuario"],
       status_aposta: [
         "pendente",
         "ganha",

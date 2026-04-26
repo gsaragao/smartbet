@@ -47,6 +47,7 @@ import {
   obterDetalheAposta,
   reabrirAposta,
 } from '@/features/bets/actions';
+import { useUser } from '@/components/providers/user-context';
 import type {
   BetDetail,
   BetListItem,
@@ -928,6 +929,7 @@ function RowActions({
   onDelete: () => void;
   reabrindo: boolean;
 }) {
+  const { canWrite } = useUser();
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -950,6 +952,7 @@ function RowActions({
           Abrir detalhe
         </Link>
         {aposta.status === 'pendente' ? (
+          canWrite && (
           <>
             <button
               type="button"
@@ -985,7 +988,9 @@ function RowActions({
               Excluir
             </button>
           </>
+          )
         ) : (
+          canWrite && (
           <button
             type="button"
             disabled={reabrindo}
@@ -998,6 +1003,7 @@ function RowActions({
             <RotateCcw className="size-4" />
             {reabrindo ? 'Reabrindo…' : 'Reabrir'}
           </button>
+          )
         )}
       </PopoverContent>
     </Popover>

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { requireAuth } from '@/lib/auth/profile';
+import { requireAuth, requireExecutor } from '@/lib/auth/profile';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
@@ -220,7 +220,8 @@ function inputMultiplaParaPayloadRpc(input: BetInput) {
 export async function criarAposta(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
 
   const parsed = betInputSchema.safeParse(input);
   if (!parsed.success) {
@@ -277,7 +278,8 @@ export async function criarAposta(
 // ---------------------------------------------------------------------------
 
 export async function atualizarAposta(input: unknown): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
 
   const parsed = betUpdateSchema.safeParse(input);
   if (!parsed.success) {
@@ -372,7 +374,8 @@ export async function atualizarAposta(input: unknown): Promise<ActionResult> {
 // ---------------------------------------------------------------------------
 
 export async function excluirAposta(id: string): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();
@@ -406,7 +409,8 @@ export async function excluirAposta(id: string): Promise<ActionResult> {
 export async function resolverAposta(
   input: unknown,
 ): Promise<ActionResult<{ id: string }>> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
 
   const parsed = betResolveSchema.safeParse(input);
   if (!parsed.success) {
@@ -445,7 +449,8 @@ export async function resolverAposta(
 // ---------------------------------------------------------------------------
 
 export async function reabrirAposta(id: string): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();
@@ -494,7 +499,8 @@ export async function resolverSelecao(
   selecao_id: string,
   status: Database['public']['Enums']['status_aposta'],
 ): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
   if (!selecao_id) return { ok: false, message: 'ID inválido.' };
   if (status === 'pendente') {
     return { ok: false, message: 'Use outro fluxo para reverter para pendente.' };

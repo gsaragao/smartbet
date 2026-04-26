@@ -61,3 +61,28 @@ export async function requireAdmin(): Promise<Perfil> {
   if (profile.papel !== 'admin') notFound();
   return profile;
 }
+
+/**
+ * Returns true when the role allows creating, editing and deleting data.
+ * `admin` and `executor` are write-enabled; `consulta` is read-only.
+ * `usuario` is kept for backward-compatibility (existing rows before the
+ * 0029 migration ran).
+ */
+export function canWrite(papel: Papel): boolean {
+  return papel === 'admin' || papel === 'executor' || papel === 'usuario';
+}
+
+/**
+ * Hard guard for write operations (Server Actions that mutate data).
+ *
+ * Returns the profile when allowed. Returns an `ActionResult`-shaped object
+ * with `ok: false` when the authenticated user has the `consulta` role, so
+ * the caller can surface the error via toast without throwing.
+ */
+export async function requireExecutor(): Promise<Perfil | { ok: false; message: string }> {
+  const profile = await requireAuth();
+  if (!canWrite(profile.papel)) {
+    return { ok: false, message: 'Você não tem permissão para esta ação.' };
+  }
+  return profile;
+}

@@ -2,7 +2,7 @@
 
 Sistema pessoal de **gestão e análise inteligente de apostas esportivas**. Cada aposta é registrada dentro de uma **estratégia nomeada** com regras parametrizadas, permitindo medir objetivamente o que funciona, o que destrói a banca, e — futuramente — automatizar a tomada de decisão com sinais ao vivo.
 
-> Nasceu para resolver a dor real de quem aposta com método e tenta controlar tudo em planilhas: ROI por estratégia, hit rate, drawdown, streaks, EV+ e Kelly — sem importar CSV no Excel toda noite.
+> Nasceu para resolver a dor real de quem aposta com método e tenta controlar tudo em planilhas: ROI por estratégia, hit rate, drawdown, streaks, EV+ — sem importar CSV no Excel toda noite.
 
 ---
 
@@ -12,8 +12,6 @@ Sistema pessoal de **gestão e análise inteligente de apostas esportivas**. Cad
 |---|---|---|
 | **1 — MVP** | Registro manual de apostas, controle de banca, estratégias com regras (AST) e dashboard analítico | ✅ Em andamento |
 | **2** | Coleta semiautomática de jogos da próxima rodada (scraping/feed) | ⏳ Planejado |
-| **3** | Estatísticas ao vivo (estilo FlashScore) + motor de regras `Odd → Tempo → Estatística → EV+` + notificações push/WhatsApp | ⏳ Planejado |
-| **4** | Execução semiautomatizada de apostas a partir das notificações | ⏳ Planejado |
 
 ### O que já está implementado (Fase 1)
 
@@ -139,7 +137,7 @@ Enums chave: `status_aposta` (pendente/ganha/perdida/anulada/cashout/meio_green/
 
 - **Node.js 20+** (testado em 24.x)
 - **npm 10+** (testado em 11.x)
-- **Conta Supabase** (Cloud) — o projeto usa o Supabase já provisionado em `jlizdnlteihlliioxcri` (definido em `package.json` no script `db:types`)
+- **Conta Supabase** (Cloud) (definido em `package.json` no script `db:types`)
 
 ### 2. Instalar dependências
 
@@ -182,7 +180,9 @@ App sobe em http://localhost:3000 com Turbopack.
 
 ### 6. Login inicial
 
-O seed cria um usuário admin: **`admin@smartbet.com`** / **`admin123`**.
+O seed cria um usuário admin: **`admin@smartbet.com`**.
+
+> **Segurança:** altere a senha default imediatamente após o primeiro acesso em qualquer ambiente além do local. Veja a migration `0008` para referência.
 
 ---
 
@@ -198,7 +198,7 @@ O seed cria um usuário admin: **`admin@smartbet.com`** / **`admin123`**.
 | `npm run format` | Prettier em todos os arquivos |
 | `npm run format:check` | Verifica formatação sem alterar |
 | `npm run type-check` | `tsc --noEmit` |
-| `npm run db:types` | Regenera `src/types/supabase.ts` a partir do schema remoto |
+| `npm run db:types` | Regenera `src/types/supabase.ts` a partir do schema remoto (requer `supabase link` prévio) |
 
 ---
 

@@ -60,6 +60,7 @@ type EditProps = {
 type Props = CreateProps | EditProps;
 
 export function BancaDialog(props: Props) {
+  const { canWrite } = useUser();
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = props.open !== undefined;
   const open = isControlled ? (props.open as boolean) : internalOpen;
@@ -71,7 +72,7 @@ export function BancaDialog(props: Props) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {!isControlled && !isEdit && (
+      {!isControlled && !isEdit && canWrite && (
         <DialogTrigger
           render={
             <Button size="sm" className="gap-1.5">

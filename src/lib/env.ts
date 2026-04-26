@@ -16,6 +16,10 @@ const publicSchema = z.object({
 });
 
 const serverSchema = publicSchema.extend({
+  // Server-only — never expose to the browser (not prefixed with NEXT_PUBLIC_).
+  // Required for admin RPCs and seed scripts. Validate presence explicitly in
+  // any server action that actually uses this key instead of relying on this
+  // schema (module is imported by browser-safe code and cannot throw at build).
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
 });
 

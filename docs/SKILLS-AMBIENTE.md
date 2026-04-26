@@ -2,7 +2,7 @@
 
 Estas skills **não** ficam dentro do repositório `smart-bet`; o Cursor/Claude carregam a partir dos caminhos abaixo quando aparecem na lista de skills disponíveis.
 
-## `C:\Users\Juan\.agents\skills\`
+## `C:\Users\<SEU-USUARIO>\.agents\skills\`
 
 | Pasta                         | Uso típico                                                  |
 | ----------------------------- | ----------------------------------------------------------- |
@@ -22,9 +22,9 @@ Estas skills **não** ficam dentro do repositório `smart-bet`; o Cursor/Claude 
 | `traffic-architect`           | Tráfego / Dream 100                                         |
 | `upsell-downsell-scripting`   | OTO / upsell                                                |
 
-Cada skill tem um `SKILL.md` na própria pasta (ex.: `C:\Users\Juan\.agents\skills\ui-ux-pro-max\SKILL.md`).
+Cada skill tem um `SKILL.md` na própria pasta (ex.: `C:\Users\<SEU-USUARIO>\.agents\skills\ui-ux-pro-max\SKILL.md`).
 
-## `C:\Users\Juan\.cursor\skills-cursor\`
+## `C:\Users\<SEU-USUARIO>\.cursor\skills-cursor\`
 
 | Pasta                    | Uso típico                |
 | ------------------------ | ------------------------- |
@@ -43,9 +43,9 @@ Cada skill tem um `SKILL.md` na própria pasta (ex.: `C:\Users\Juan\.agents\skil
 ## Claude Code — plugins oficiais
 
 Exemplo: **frontend-design** em  
-`C:\Users\Juan\.claude\plugins\marketplaces\claude-plugins-official\plugins\frontend-design\skills\frontend-design\`
+`C:\Users\<SEU-USUARIO>\.claude\plugins\marketplaces\claude-plugins-official\plugins\frontend-design\skills\frontend-design\`
 
 Outras skills de plugin ficam sob  
-`C:\Users\Juan\.claude\plugins\marketplaces\claude-plugins-official\plugins\...\skills\...`.
+`C:\Users\<SEU-USUARIO>\.claude\plugins\marketplaces\claude-plugins-official\plugins\...\skills\...`.
 
-> Na máquina atual não há um conjunto equivalente em `C:\Users\Juan\.claude\skills\`; o foco em UX/React/marketing está em **`.agents\skills`** + **`.cursor\skills-cursor`** + plugins do Claude.
+> Na máquina atual não há um conjunto equivalente em `C:\Users\<SEU-USUARIO>\.claude\skills\`; o foco em UX/React/marketing está em **`.agents\skills`** + **`.cursor\skills-cursor`** + plugins do Claude.
