@@ -4,11 +4,7 @@ import { Suspense } from 'react';
 import { PageHeader } from '@/components/layout/page-header';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  listarApostas,
-  listarOpcoesRegistro,
-  resumoApostas,
-} from '@/features/bets/queries';
+import { listarApostas, listarOpcoesRegistro, resumoApostas } from '@/features/bets/queries';
 
 import { BetDialog } from './_components/bet-dialog';
 import { BetsGrid } from './_components/bets-grid';
@@ -44,14 +40,11 @@ async function HeaderComDados() {
       description="Registre suas entradas, valide contra a estratégia e acompanhe o desempenho em tempo real. Apostas pendentes ainda não afetam sua banca."
       actions={
         semBanca ? (
-          <Button variant="outline" render={<Link href="/banca" />}>
+          <Button variant="outline" nativeButton={false} render={<Link href="/banca" />}>
             Cadastrar banca
           </Button>
         ) : (
-          <BetDialog
-            options={options}
-            triggerClassName="h-10 w-full min-[480px]:w-auto sm:h-9"
-          />
+          <BetDialog options={options} triggerClassName="h-10 w-full min-[480px]:w-auto sm:h-9" />
         )
       }
     />

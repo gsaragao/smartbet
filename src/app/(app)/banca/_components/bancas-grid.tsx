@@ -41,6 +41,7 @@ import type { BancaListItem } from '@/features/banca/queries';
 import { formatMoney, formatPercent } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
+import { useUser } from '@/components/providers/user-context';
 import { BancaDialog } from './banca-dialog';
 
 type Props = {
@@ -58,6 +59,7 @@ export function BancasGrid({ bancas }: Props) {
 }
 
 function BancaCard({ banca }: { banca: BancaListItem }) {
+  const { canWrite } = useUser();
   const [editOpen, setEditOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
@@ -177,7 +179,8 @@ function BancaCard({ banca }: { banca: BancaListItem }) {
 
         {/* Kebab menu sits above the invisible link so it stays interactive. */}
         <div className="relative z-20 shrink-0">
-          <DropdownMenu>
+          {canWrite && (
+            <DropdownMenu>
             <DropdownMenuTrigger
               render={
                 <Button
@@ -220,6 +223,7 @@ function BancaCard({ banca }: { banca: BancaListItem }) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          )}
         </div>
       </CardHeader>
 

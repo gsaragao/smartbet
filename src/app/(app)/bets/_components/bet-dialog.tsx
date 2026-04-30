@@ -44,6 +44,7 @@ import {
   criarAposta,
   type ActionResult,
 } from '@/features/bets/actions';
+import { useUser } from '@/components/providers/user-context';
 import type { BetDetail, RegistroOptions } from '@/features/bets/queries';
 import { avaliarApostaVsEstrategia } from '@/features/bets/rules-evaluator';
 import {
@@ -85,6 +86,7 @@ export function BetDialog({
   onOpenChange,
   trigger,
 }: Props) {
+  const { canWrite } = useUser();
   const isControlled = typeof openProp === 'boolean';
   const [openInternal, setOpenInternal] = React.useState(false);
   const open = isControlled ? openProp : openInternal;
@@ -111,7 +113,7 @@ export function BetDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {!isControlled && resolvedTrigger ? (
+      {!isControlled && canWrite && resolvedTrigger ? (
         <DialogTrigger render={resolvedTrigger as React.ReactElement} />
       ) : null}
       <DialogContent

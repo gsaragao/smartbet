@@ -31,6 +31,7 @@ import {
   pausarEstrategia,
 } from '@/features/strategies/actions';
 import type { StrategyListItem } from '@/features/strategies/queries';
+import { useUser } from '@/components/providers/user-context';
 import { cn } from '@/lib/utils';
 
 const STATUS_LABEL: Record<StrategyListItem['status'], string> = {
@@ -63,6 +64,7 @@ export function StrategyCard({
   estrategia: StrategyListItem;
   onEdit?: (id: string) => void;
 }) {
+  const { canWrite } = useUser();
   const [isPending, startTransition] = React.useTransition();
 
   const cor = estrategia.cor ?? '#6366f1';
@@ -109,6 +111,7 @@ export function StrategyCard({
             {STATUS_LABEL[estrategia.status]}
           </Badge>
 
+          {canWrite && (
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -210,6 +213,7 @@ export function StrategyCard({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          )}
         </div>
 
         {estrategia.tags.length > 0 && (

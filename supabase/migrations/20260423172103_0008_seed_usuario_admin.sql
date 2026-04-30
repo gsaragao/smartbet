@@ -1,7 +1,10 @@
 -- =============================================================================
 -- Smart Bet · 0008 · Seed do usuario administrador
 -- -----------------------------------------------------------------------------
--- Cria admin@smartbet.com / admin123. Idempotente.
+-- Cria o usuário admin@smartbet.com com a senha definida abaixo.
+-- ATENÇÃO: altere a senha imediatamente após o primeiro deploy em produção.
+-- Em produção, prefira criar o admin pelo painel Supabase e remover este seed.
+-- Idempotente.
 -- =============================================================================
 
 do $$
@@ -23,7 +26,7 @@ begin
       'authenticated',
       'authenticated',
       'admin@smartbet.com',
-      crypt('admin123', gen_salt('bf', 10)),
+      crypt('Adm!n@SmartBet#0001', gen_salt('bf', 10)),  -- TROQUE ESTA SENHA NO PRIMEIRO ACESSO
       now(),
       jsonb_build_object('provider','email','providers', jsonb_build_array('email')),
       jsonb_build_object('nome_completo','Administrador Smart Bet'),

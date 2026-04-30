@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { requireAuth } from '@/lib/auth/profile';
+import { requireAuth, requireExecutor } from '@/lib/auth/profile';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 import {
@@ -39,7 +39,9 @@ function normalizeText(value: string | undefined | null): string | null {
 // ---------------------------------------------------------------------------
 
 export async function criarBanca(input: unknown): Promise<ActionResult> {
-  const profile = await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
+  const profile = authResult;
 
   const parsed = bancaSchema.safeParse(input);
   if (!parsed.success) {
@@ -97,7 +99,9 @@ export async function criarBanca(input: unknown): Promise<ActionResult> {
 }
 
 export async function atualizarBanca(input: unknown): Promise<ActionResult> {
-  const profile = await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
+  const profile = authResult;
 
   const parsed = bancaUpdateSchema.safeParse(input);
   if (!parsed.success) {
@@ -142,7 +146,8 @@ export async function alternarAtivaBanca(
   id: string,
   ativa: boolean,
 ): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();
@@ -159,7 +164,9 @@ export async function alternarAtivaBanca(
 }
 
 export async function definirBancaPrincipal(id: string): Promise<ActionResult> {
-  const profile = await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
+  const profile = authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();
@@ -184,7 +191,8 @@ export async function definirBancaPrincipal(id: string): Promise<ActionResult> {
 }
 
 export async function excluirBanca(id: string): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();
@@ -211,7 +219,9 @@ export async function excluirBanca(id: string): Promise<ActionResult> {
 // ---------------------------------------------------------------------------
 
 export async function criarEventoBanca(input: unknown): Promise<ActionResult> {
-  const profile = await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
+  const profile = authResult;
 
   const parsed = eventoBancaSchema.safeParse(input);
   if (!parsed.success) {
@@ -253,7 +263,8 @@ export async function excluirEventoBanca(
   id: string,
   bancaId: string,
 ): Promise<ActionResult> {
-  await requireAuth();
+  const authResult = await requireExecutor();
+  if (!('id' in authResult)) return authResult;
   if (!id || !bancaId) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();

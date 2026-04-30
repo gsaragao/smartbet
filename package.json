@@ -11,7 +11,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "type-check": "tsc --noEmit",
-    "db:types": "npx --yes supabase gen types typescript --project-id jlizdnlteihlliioxcri --schema public > src/types/supabase.ts",
+    "db:types": "npx --yes supabase gen types typescript --schema public > src/types/supabase.ts",
     "prepare": "husky"
   },
   "lint-staged": {

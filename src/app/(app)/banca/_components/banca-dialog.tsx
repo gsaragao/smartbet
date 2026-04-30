@@ -34,13 +34,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import {
-  atualizarBanca,
-  criarBanca,
-  type ActionResult,
-} from '@/features/banca/actions';
+import { atualizarBanca, criarBanca, type ActionResult } from '@/features/banca/actions';
 import type { BancaListItem } from '@/features/banca/queries';
 import { bancaSchema, MOEDAS, type BancaInput } from '@/features/banca/schema';
+import { useUser } from '@/components/providers/user-context';
 
 type BancaFormValues = BancaInput;
 
@@ -60,18 +57,17 @@ type EditProps = {
 type Props = CreateProps | EditProps;
 
 export function BancaDialog(props: Props) {
+  const { canWrite } = useUser();
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = props.open !== undefined;
   const open = isControlled ? (props.open as boolean) : internalOpen;
-  const setOpen = isControlled
-    ? (props.onOpenChange as (v: boolean) => void)
-    : setInternalOpen;
+  const setOpen = isControlled ? (props.onOpenChange as (v: boolean) => void) : setInternalOpen;
 
   const isEdit = props.mode === 'edit';
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {!isControlled && !isEdit && (
+      {!isControlled && !isEdit && canWrite && (
         <DialogTrigger
           render={
             <Button size="sm" className="gap-1.5">
@@ -92,22 +88,13 @@ export function BancaDialog(props: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <BancaForm
-          initial={isEdit ? props.banca : undefined}
-          onDone={() => setOpen(false)}
-        />
+        <BancaForm initial={isEdit ? props.banca : undefined} onDone={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   );
 }
 
-function BancaForm({
-  initial,
-  onDone,
-}: {
-  initial?: BancaListItem;
-  onDone: () => void;
-}) {
+function BancaForm({ initial, onDone }: { initial?: BancaListItem; onDone: () => void }) {
   const form = useForm<BancaFormValues>({
     resolver: zodResolver(bancaSchema),
     defaultValues: initial
@@ -181,11 +168,7 @@ function BancaForm({
               <FormItem>
                 <FormLabel>Casa de aposta (opcional)</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Bet365, Betano..."
-                    {...field}
-                    value={field.value ?? ''}
-                  />
+                  <Input placeholder="Bet365, Betano..." {...field} value={field.value ?? ''} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -268,12 +251,7 @@ function BancaForm({
         />
 
         <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onDone}
-            disabled={isPending}
-          >
+          <Button type="button" variant="outline" onClick={onDone} disabled={isPending}>
             Cancelar
           </Button>
           <Button type="submit" disabled={isPending}>

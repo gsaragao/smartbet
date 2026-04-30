@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -89,12 +90,14 @@ function UserMenu({ email, initial }: { email: string; initial: string }) {
         }
       />
       <DropdownMenuContent align="end" className="w-60">
-        <DropdownMenuLabel className="flex flex-col gap-0.5 py-2">
-          <span className="text-muted-foreground text-[11px] font-normal tracking-wide uppercase">
-            Conectado como
-          </span>
-          <span className="truncate text-sm font-medium">{email}</span>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex flex-col gap-0.5 py-2">
+            <span className="text-muted-foreground text-[11px] font-normal tracking-wide uppercase">
+              Conectado como
+            </span>
+            <span className="truncate text-sm font-medium">{email}</span>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>
           <UserIcon className="size-4" /> Minha conta

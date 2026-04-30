@@ -29,6 +29,7 @@ import {
   criarEstrategia,
   type ActionResult,
 } from '@/features/strategies/actions';
+import { useUser } from '@/components/providers/user-context';
 import type { StrategyDetail, WizardOptions } from '@/features/strategies/queries';
 import {
   defaultStrategyInput,
@@ -79,6 +80,7 @@ const STEP_FIELDS: Record<StepId, (keyof StrategyInput)[]> = {
 };
 
 export function StrategyDialog(props: Props) {
+  const { canWrite } = useUser();
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = props.open !== undefined;
   const open = isControlled ? (props.open as boolean) : internalOpen;
@@ -92,7 +94,7 @@ export function StrategyDialog(props: Props) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {showTrigger && !isControlled && (
+      {showTrigger && !isControlled && canWrite && (
         <DialogTrigger
           render={
             <Button

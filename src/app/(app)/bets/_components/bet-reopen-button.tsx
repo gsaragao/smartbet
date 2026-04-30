@@ -14,6 +14,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { reabrirAposta } from '@/features/bets/actions';
+import { useUser } from '@/components/providers/user-context';
 import { cn } from '@/lib/utils';
 
 type Props = {
@@ -33,8 +34,11 @@ export function BetReopenButton({
   children,
   onReopened,
 }: Props) {
+  const { canWrite } = useUser();
   const [open, setOpen] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
+
+  if (!canWrite) return null;
 
   const confirmar = () => {
     startTransition(async () => {
