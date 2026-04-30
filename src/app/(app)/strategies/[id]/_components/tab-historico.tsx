@@ -48,14 +48,11 @@ export function TabHistorico({ apostas }: Props) {
         <div className="bg-muted text-muted-foreground flex size-12 items-center justify-center rounded-full">
           <Clock className="size-5" />
         </div>
-        <h3 className="text-foreground text-sm font-medium">
-          Nenhuma aposta registrada ainda
-        </h3>
+        <h3 className="text-foreground text-sm font-medium">Nenhuma aposta registrada ainda</h3>
         <p className="text-muted-foreground max-w-sm text-xs">
-          Assim que você registrar uma aposta vinculada a esta estratégia, ela
-          aparece aqui.
+          Assim que você registrar uma aposta vinculada a esta estratégia, ela aparece aqui.
         </p>
-        <Button size="sm" variant="outline" render={<Link href="/bets" />}>
+        <Button size="sm" variant="outline" nativeButton={false} render={<Link href="/bets" />}>
           Ir para apostas
         </Button>
       </div>
@@ -64,16 +61,9 @@ export function TabHistorico({ apostas }: Props) {
 
   // KPIs locais do histórico
   const resolvidas = apostas.filter((a) => a.status !== 'pendente');
-  const greens = resolvidas.filter(
-    (a) => a.status === 'ganha' || a.status === 'meio_green',
-  ).length;
-  const reds = resolvidas.filter(
-    (a) => a.status === 'perdida' || a.status === 'meio_red',
-  ).length;
-  const lucro = resolvidas.reduce(
-    (acc, a) => acc + (a.lucro != null ? a.lucro : 0),
-    0,
-  );
+  const greens = resolvidas.filter((a) => a.status === 'ganha' || a.status === 'meio_green').length;
+  const reds = resolvidas.filter((a) => a.status === 'perdida' || a.status === 'meio_red').length;
+  const lucro = resolvidas.reduce((acc, a) => acc + (a.lucro != null ? a.lucro : 0), 0);
   const stakePago = resolvidas.reduce(
     (acc, a) => (a.eh_freebet || a.status === 'anulada' ? acc : acc + a.stake),
     0,
@@ -97,17 +87,13 @@ export function TabHistorico({ apostas }: Props) {
           value={`${roi.toFixed(1)}%`}
           tone={roi > 0 ? 'pos' : roi < 0 ? 'neg' : 'neutral'}
         />
-        <Kpi
-          label="Hit rate"
-          value={`${hitRate.toFixed(0)}%`}
-          tone="neutral"
-        />
+        <Kpi label="Hit rate" value={`${hitRate.toFixed(0)}%`} tone="neutral" />
       </div>
 
       {/* Tabela/listagem */}
-      <div className="border-border/70 hidden overflow-hidden rounded-xl border bg-card md:block">
+      <div className="border-border/70 bg-card hidden overflow-hidden rounded-xl border md:block">
         <table className="w-full border-collapse text-sm">
-          <thead className="bg-muted/40 text-muted-foreground text-xs uppercase tracking-wider">
+          <thead className="bg-muted/40 text-muted-foreground text-xs tracking-wider uppercase">
             <tr>
               <th className="px-4 py-2 text-left font-medium">Jogo</th>
               <th className="px-3 py-2 text-left font-medium">Seleção</th>
@@ -127,15 +113,11 @@ export function TabHistorico({ apostas }: Props) {
                 <tr key={a.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3">
                     <div className="text-foreground truncate text-sm font-medium">
-                      {partida
-                        ? `${partida.mandante ?? '—'} × ${partida.visitante ?? '—'}`
-                        : '—'}
+                      {partida ? `${partida.mandante ?? '—'} × ${partida.visitante ?? '—'}` : '—'}
                     </div>
                     <div className="text-muted-foreground truncate text-xs">
                       {partida?.liga_nome ?? '—'}
-                      {partida?.inicio
-                        ? ` · ${formatDateTime(partida.inicio)}`
-                        : ''}
+                      {partida?.inicio ? ` · ${formatDateTime(partida.inicio)}` : ''}
                     </div>
                   </td>
                   <td className="px-3 py-3">
@@ -144,9 +126,7 @@ export function TabHistorico({ apostas }: Props) {
                     </div>
                     <div className="text-muted-foreground text-xs">
                       {a.selecao_resumo?.tipo_aposta_nome ?? ''}
-                      {a.selecao_resumo?.linha
-                        ? ` · ${a.selecao_resumo.linha}`
-                        : ''}
+                      {a.selecao_resumo?.linha ? ` · ${a.selecao_resumo.linha}` : ''}
                     </div>
                   </td>
                   <td className="px-3 py-3 text-right font-mono text-sm tabular-nums">
@@ -179,10 +159,7 @@ export function TabHistorico({ apostas }: Props) {
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-1.5">
-                      <StatusBadge
-                        status={mapStatus(a.status)}
-                        label={STATUS_LABELS[a.status]}
-                      />
+                      <StatusBadge status={mapStatus(a.status)} label={STATUS_LABELS[a.status]} />
                       {a.estrategia_override && (
                         <Badge
                           variant="outline"
@@ -201,6 +178,7 @@ export function TabHistorico({ apostas }: Props) {
                     <Button
                       variant="ghost"
                       size="icon-sm"
+                      nativeButton={false}
                       render={<Link href={`/bets/${a.id}`} />}
                     >
                       <ArrowUpRight className="size-4" />
@@ -228,36 +206,27 @@ export function TabHistorico({ apostas }: Props) {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
                   <div className="text-foreground truncate text-sm font-medium">
-                    {partida
-                      ? `${partida.mandante ?? '—'} × ${partida.visitante ?? '—'}`
-                      : '—'}
+                    {partida ? `${partida.mandante ?? '—'} × ${partida.visitante ?? '—'}` : '—'}
                   </div>
                   <div className="text-muted-foreground truncate text-xs">
                     {a.selecao_resumo?.descricao ?? '—'}
                   </div>
                 </div>
-                <StatusBadge
-                  status={mapStatus(a.status)}
-                  label={STATUS_LABELS[a.status]}
-                />
+                <StatusBadge status={mapStatus(a.status)} label={STATUS_LABELS[a.status]} />
               </div>
               <div className="text-muted-foreground flex items-center gap-3 text-xs">
-                <span className="font-mono tabular-nums">
-                  Odd {a.odd_total.toFixed(2)}
-                </span>
+                <span className="font-mono tabular-nums">Odd {a.odd_total.toFixed(2)}</span>
                 <span>•</span>
-                <span className="font-mono tabular-nums">
-                  {formatMoney(a.stake, moedaLinha)}
-                </span>
+                <span className="font-mono tabular-nums">{formatMoney(a.stake, moedaLinha)}</span>
                 {a.lucro != null && (
                   <>
                     <span>•</span>
                     <span
                       className={
                         a.lucro > 0
-                          ? 'text-emerald-600 dark:text-emerald-400 font-mono tabular-nums'
+                          ? 'font-mono text-emerald-600 tabular-nums dark:text-emerald-400'
                           : a.lucro < 0
-                            ? 'text-rose-600 dark:text-rose-400 font-mono tabular-nums'
+                            ? 'font-mono text-rose-600 tabular-nums dark:text-rose-400'
                             : 'font-mono tabular-nums'
                       }
                     >
@@ -294,7 +263,7 @@ function Kpi({
         : 'text-foreground';
   return (
     <div className="border-border/70 bg-card rounded-xl border px-3 py-2.5">
-      <div className="text-muted-foreground text-[11px] font-medium uppercase tracking-wider">
+      <div className="text-muted-foreground text-[11px] font-medium tracking-wider uppercase">
         {label}
       </div>
       <div className={`text-base font-semibold ${toneClass}`}>{value}</div>

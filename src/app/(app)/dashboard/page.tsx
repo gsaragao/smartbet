@@ -15,13 +15,7 @@ import { StatCard, type StatTrend } from '@/components/dashboard/stat-card';
 import { EmptyState } from '@/components/ui-kit/empty-state';
 import { StatusBadge, type Status } from '@/components/ui-kit/status-badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { obterDashboardOverview } from '@/features/dashboard/queries';
 import { formatDateTime, formatMoney, formatPercent } from '@/lib/format';
 import { getCurrentUser } from '@/lib/supabase/server';
@@ -37,10 +31,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function DashboardPage() {
-  const [user, overview] = await Promise.all([
-    getCurrentUser(),
-    obterDashboardOverview(),
-  ]);
+  const [user, overview] = await Promise.all([getCurrentUser(), obterDashboardOverview()]);
 
   const greetingName = user?.email?.split('@')[0] ?? 'apostador';
 
@@ -50,21 +41,14 @@ export default async function DashboardPage() {
 
   const variacaoPct = overview.banca.variacao_pct;
   const bancaTrend: StatTrend =
-    variacaoPct == null
-      ? 'neutral'
-      : variacaoPct > 0
-        ? 'up'
-        : variacaoPct < 0
-          ? 'down'
-          : 'neutral';
+    variacaoPct == null ? 'neutral' : variacaoPct > 0 ? 'up' : variacaoPct < 0 ? 'down' : 'neutral';
 
   const roi = overview.apostas_total.roi_pct;
   const roiTrend: StatTrend =
     roi == null ? 'neutral' : roi > 0 ? 'up' : roi < 0 ? 'down' : 'neutral';
 
   const hit = overview.apostas_total.hit_rate_pct;
-  const hitTrend: StatTrend =
-    hit == null ? 'neutral' : hit >= 50 ? 'up' : 'down';
+  const hitTrend: StatTrend = hit == null ? 'neutral' : hit >= 50 ? 'up' : 'down';
 
   const stats = [
     {
@@ -135,7 +119,8 @@ export default async function DashboardPage() {
         description="Aqui você acompanha o desempenho geral da sua banca e estratégias."
         actions={
           <Button
-            className="gap-2 shadow-brand-sm"
+            className="shadow-brand-sm gap-2"
+            nativeButton={false}
             render={<Link href="/bets" />}
           >
             <PlusCircle className="size-4" />
@@ -157,7 +142,7 @@ export default async function DashboardPage() {
         <Card className="relative overflow-hidden lg:col-span-2">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -top-32 -right-24 size-64 rounded-full bg-primary/10 blur-3xl"
+            className="bg-primary/10 pointer-events-none absolute -top-32 -right-24 size-64 rounded-full blur-3xl"
           />
           <CardHeader className="relative">
             <CardTitle className="font-heading text-lg">
@@ -178,7 +163,7 @@ export default async function DashboardPage() {
                 title="Pronto para começar"
                 description="Sua banca está cadastrada. Registre sua primeira aposta para ver as métricas ganharem vida."
                 action={
-                  <Button className="gap-1" render={<Link href="/bets" />}>
+                  <Button className="gap-1" nativeButton={false} render={<Link href="/bets" />}>
                     Registrar primeira aposta
                     <ArrowUpRight className="size-4" />
                   </Button>
@@ -197,9 +182,7 @@ export default async function DashboardPage() {
                         BP
                       </span>
                       <div className="flex flex-col">
-                        <span className="text-foreground font-medium">
-                          Banca Principal
-                        </span>
+                        <span className="text-foreground font-medium">Banca Principal</span>
                         <span className="text-muted-foreground font-mono text-[11px] tabular-nums">
                           R$ 1.000,00 · Pinnacle
                         </span>
@@ -211,6 +194,7 @@ export default async function DashboardPage() {
                   <Button
                     variant="outline"
                     className="gap-1"
+                    nativeButton={false}
                     render={<Link href="/banca" />}
                   >
                     Configurar banca
@@ -241,10 +225,7 @@ export default async function DashboardPage() {
             {temApostas ? (
               <SummaryByArea overview={overview} />
             ) : (
-              <NextStepsList
-                hasBanca={temBanca}
-                hasEstrategia={overview.estrategias.total > 0}
-              />
+              <NextStepsList hasBanca={temBanca} hasEstrategia={overview.estrategias.total > 0} />
             )}
           </CardContent>
         </Card>
@@ -253,7 +234,11 @@ export default async function DashboardPage() {
   );
 }
 
-function RecentActivity({ overview }: { overview: Awaited<ReturnType<typeof obterDashboardOverview>> }) {
+function RecentActivity({
+  overview,
+}: {
+  overview: Awaited<ReturnType<typeof obterDashboardOverview>>;
+}) {
   const moeda = overview.banca.moeda_principal;
   const ultima = overview.ultima_aposta;
 
@@ -308,15 +293,20 @@ function RecentActivity({ overview }: { overview: Awaited<ReturnType<typeof obte
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" render={<Link href="/bets" />}>
+        <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/bets" />}>
           Ver todas as apostas
           <ArrowUpRight className="size-3.5" />
         </Button>
-        <Button variant="outline" size="sm" render={<Link href="/strategies" />}>
+        <Button
+          variant="outline"
+          size="sm"
+          nativeButton={false}
+          render={<Link href="/strategies" />}
+        >
           Estratégias
           <ArrowUpRight className="size-3.5" />
         </Button>
-        <Button variant="outline" size="sm" render={<Link href="/banca" />}>
+        <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/banca" />}>
           Banca
           <ArrowUpRight className="size-3.5" />
         </Button>
@@ -405,52 +395,32 @@ function MiniStat({
   accent?: 'neutral' | 'win' | 'loss';
 }) {
   const valueClass =
-    accent === 'win'
-      ? 'text-win'
-      : accent === 'loss'
-        ? 'text-loss'
-        : 'text-foreground';
+    accent === 'win' ? 'text-win' : accent === 'loss' ? 'text-loss' : 'text-foreground';
   return (
     <div className="border-border bg-muted/30 flex flex-col rounded-md border p-3">
       <span className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
         {label}
       </span>
-      <span
-        className={`font-mono text-lg font-semibold tabular-nums ${valueClass}`}
-      >
-        {value}
-      </span>
+      <span className={`font-mono text-lg font-semibold tabular-nums ${valueClass}`}>{value}</span>
     </div>
   );
 }
 
-function NextStepsList({
-  hasBanca,
-  hasEstrategia,
-}: {
-  hasBanca: boolean;
-  hasEstrategia: boolean;
-}) {
+function NextStepsList({ hasBanca, hasEstrategia }: { hasBanca: boolean; hasEstrategia: boolean }) {
   return (
     <>
       <ol className="flex flex-col gap-3 text-sm">
         <Step n={1} done={hasBanca}>
           <span className="font-medium">Defina sua banca inicial.</span>{' '}
-          <span className="text-muted-foreground">
-            Base para todos os cálculos de ROI e yield.
-          </span>
+          <span className="text-muted-foreground">Base para todos os cálculos de ROI e yield.</span>
         </Step>
         <Step n={2} done={hasEstrategia}>
           <span className="font-medium">Crie sua primeira estratégia.</span>{' '}
-          <span className="text-muted-foreground">
-            Ex.: “Over 0.5 2° tempo (futebol)”.
-          </span>
+          <span className="text-muted-foreground">Ex.: “Over 0.5 2° tempo (futebol)”.</span>
         </Step>
         <Step n={3} done={false}>
           <span className="font-medium">Registre apostas reais.</span>{' '}
-          <span className="text-muted-foreground">
-            O dashboard ganha vida em seguida.
-          </span>
+          <span className="text-muted-foreground">O dashboard ganha vida em seguida.</span>
         </Step>
       </ol>
 
@@ -467,15 +437,7 @@ function NextStepsList({
   );
 }
 
-function Step({
-  n,
-  done,
-  children,
-}: {
-  n: number;
-  done: boolean;
-  children: React.ReactNode;
-}) {
+function Step({ n, done, children }: { n: number; done: boolean; children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-3">
       <span

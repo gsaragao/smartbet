@@ -25,48 +25,47 @@ export function EmptyState({ options }: { options: WizardOptions }) {
           Crie sua primeira estratégia
         </h3>
         <p className="text-muted-foreground mt-1.5 text-sm">
-          Estratégias organizam suas apostas em torno de um racional claro, com
-          regras, gestão de stake e guardrails.
+          Estratégias organizam suas apostas em torno de um racional claro, com regras, gestão de
+          stake e guardrails.
         </p>
       </div>
 
       <div className="grid w-full max-w-2xl gap-3 sm:grid-cols-2">
         {canWrite && (
-        <button
-          type="button"
-          onClick={() => setCreateOpen(true)}
-          className="bg-card group flex flex-col gap-2 rounded-xl border p-5 text-left transition-all hover:border-primary/40 hover:shadow-md"
-        >
-          <div className="bg-muted text-foreground flex size-10 items-center justify-center rounded-lg">
-            <Plus className="size-5" />
-          </div>
-          <h4 className="text-foreground font-medium">Criar do zero</h4>
-          <p className="text-muted-foreground text-xs leading-relaxed">
-            Use o wizard guiado de 4 passos (identidade, escopo, gestão,
-            regras).
-          </p>
-          <span className="text-primary mt-1 text-xs font-medium opacity-0 transition-opacity group-hover:opacity-100">
-            Começar agora →
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setPickerOpen(true)}
-          className="bg-card group flex flex-col gap-2 rounded-xl border p-5 text-left transition-all hover:border-primary/40 hover:shadow-md"
-        >
-          <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
-            <Sparkles className="size-5" />
-          </div>
-          <h4 className="text-foreground font-medium">Usar template</h4>
-          <p className="text-muted-foreground text-xs leading-relaxed">
-            Comece com estratégias prontas: Ambas Marcam, Ao vivo 0x0 ou Under
-            2.5.
-          </p>
-          <span className="text-primary mt-1 text-xs font-medium opacity-0 transition-opacity group-hover:opacity-100">
-            Ver templates →
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            className="bg-card group hover:border-primary/40 flex flex-col gap-2 rounded-xl border p-5 text-left transition-all hover:shadow-md"
+          >
+            <div className="bg-muted text-foreground flex size-10 items-center justify-center rounded-lg">
+              <Plus className="size-5" />
+            </div>
+            <h4 className="text-foreground font-medium">Criar do zero</h4>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              Use o wizard guiado de 4 passos (identidade, escopo, gestão, regras).
+            </p>
+            <span className="text-primary mt-1 text-xs font-medium opacity-0 transition-opacity group-hover:opacity-100">
+              Começar agora →
+            </span>
+          </button>
+        )}
+        {canWrite && (
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="bg-card group hover:border-primary/40 flex flex-col gap-2 rounded-xl border p-5 text-left transition-all hover:shadow-md"
+          >
+            <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
+              <Sparkles className="size-5" />
+            </div>
+            <h4 className="text-foreground font-medium">Usar template</h4>
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              Comece com estratégias prontas: Ambas Marcam, Ao vivo 0x0 ou Under 2.5.
+            </p>
+            <span className="text-primary mt-1 text-xs font-medium opacity-0 transition-opacity group-hover:opacity-100">
+              Ver templates →
+            </span>
+          </button>
         )}
       </div>
 
@@ -77,11 +76,7 @@ export function EmptyState({ options }: { options: WizardOptions }) {
         onOpenChange={setCreateOpen}
         showTrigger={false}
       />
-      <TemplatePicker
-        options={options}
-        open={pickerOpen}
-        onOpenChange={setPickerOpen}
-      />
+      <TemplatePicker options={options} open={pickerOpen} onOpenChange={setPickerOpen} />
     </div>
   );
 }

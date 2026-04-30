@@ -45,6 +45,9 @@ next-env.d.ts
 supabase/.temp/
 supabase/.branches/
 
+# QA local (não commitar)
+/qa/
+
 # IDE / OS
 .idea/
 .vscode/
