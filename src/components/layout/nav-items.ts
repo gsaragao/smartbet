@@ -11,6 +11,7 @@ import {
   Sparkles,
   Target,
   Trophy,
+  UserCog,
   Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -119,7 +120,6 @@ export const NAV_SECTIONS: NavSection[] = [
         label: 'Configurações',
         icon: Settings,
         description: 'Conta, moeda e preferências.',
-        soon: true,
       },
     ],
   },
@@ -127,6 +127,12 @@ export const NAV_SECTIONS: NavSection[] = [
     label: 'Administração',
     roles: ['admin'],
     items: [
+      {
+        href: '/admin/usuarios',
+        label: 'Usuários',
+        icon: UserCog,
+        description: 'Papéis, nomes e preferências de conta.',
+      },
       {
         href: '/admin/tipos-aposta',
         label: 'Tipos de aposta',

@@ -2,15 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { requireAuth, requireExecutor } from '@/lib/auth/profile';
+import { requireExecutor } from '@/lib/auth/profile';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
-import {
-  strategyInputSchema,
-  strategyUpdateSchema,
-  type StrategyInput,
-} from './schema';
+import { strategyInputSchema, strategyUpdateSchema, type StrategyInput } from './schema';
 
 type EstrategiaInsert = Database['public']['Tables']['estrategias']['Insert'];
 type EstrategiaUpdate = Database['public']['Tables']['estrategias']['Update'];
@@ -43,12 +39,8 @@ function isFkViolation(err: { code?: string }) {
  * achatado persistido em `public.estrategias`. As junções N:N são aplicadas
  * separadamente.
  */
-function toEstrategiaRow(
-  input: StrategyInput,
-  usuario_id: string,
-): EstrategiaInsert {
-  const arquivadaEm =
-    input.identidade.status === 'arquivada' ? new Date().toISOString() : null;
+function toEstrategiaRow(input: StrategyInput, usuario_id: string): EstrategiaInsert {
+  const arquivadaEm = input.identidade.status === 'arquivada' ? new Date().toISOString() : null;
 
   return {
     usuario_id,
@@ -63,7 +55,8 @@ function toEstrategiaRow(
     odd_maxima: input.escopo.odd_maxima,
     minuto_minimo: input.escopo.minuto_minimo,
     metodo_stake: input.gestao.metodo_stake,
-    stake_config: input.gestao.stake_config as unknown as Database['public']['Tables']['estrategias']['Insert']['stake_config'],
+    stake_config: input.gestao
+      .stake_config as unknown as Database['public']['Tables']['estrategias']['Insert']['stake_config'],
     banca_referencia: input.gestao.banca_referencia,
     edge_minimo: input.gestao.edge_minimo,
     stop_loss_reds: input.gestao.stop_loss_reds,
@@ -73,25 +66,19 @@ function toEstrategiaRow(
     yield_minimo_alerta: input.guardrails.yield_minimo_alerta,
     revisao_apos_apostas: input.guardrails.revisao_apos_apostas,
     revisao_apos_dias: input.guardrails.revisao_apos_dias,
-    regras_jsonb: input.regras as unknown as Database['public']['Tables']['estrategias']['Insert']['regras_jsonb'],
+    regras_jsonb:
+      input.regras as unknown as Database['public']['Tables']['estrategias']['Insert']['regras_jsonb'],
     tipo_aposta_id: input.escopo.tipos_aposta_ids[0] ?? null,
     arquivada_em: arquivadaEm,
   };
 }
 
-async function syncJuncoes(
-  estrategia_id: string,
-  usuario_id: string,
-  input: StrategyInput,
-) {
+async function syncJuncoes(estrategia_id: string, usuario_id: string, input: StrategyInput) {
   const supabase = await createSupabaseServerClient();
 
   // Reset total e reinserção — operação controlada pelo dono via RLS.
   const [delTipos, delLigas] = await Promise.all([
-    supabase
-      .from('estrategias_tipos_aposta')
-      .delete()
-      .eq('estrategia_id', estrategia_id),
+    supabase.from('estrategias_tipos_aposta').delete().eq('estrategia_id', estrategia_id),
     supabase.from('estrategias_ligas').delete().eq('estrategia_id', estrategia_id),
   ]);
   if (delTipos.error) throw new Error(delTipos.error.message);
@@ -122,9 +109,7 @@ async function syncJuncoes(
 // Criar
 // ---------------------------------------------------------------------------
 
-export async function criarEstrategia(
-  input: unknown,
-): Promise<ActionResult<{ id: string }>> {
+export async function criarEstrategia(input: unknown): Promise<ActionResult<{ id: string }>> {
   const authResult = await requireExecutor();
   if (!('id' in authResult)) return authResult;
   const profile = authResult;
@@ -178,9 +163,7 @@ export async function criarEstrategia(
 // Atualizar
 // ---------------------------------------------------------------------------
 
-export async function atualizarEstrategia(
-  input: unknown,
-): Promise<ActionResult> {
+export async function atualizarEstrategia(input: unknown): Promise<ActionResult> {
   const authResult = await requireExecutor();
   if (!('id' in authResult)) return authResult;
   const profile = authResult;
@@ -277,8 +260,7 @@ export async function excluirEstrategia(id: string): Promise<ActionResult> {
     if (isFkViolation(error)) {
       return {
         ok: false,
-        message:
-          'Esta estratégia possui apostas vinculadas. Arquive em vez de excluir.',
+        message: 'Esta estratégia possui apostas vinculadas. Arquive em vez de excluir.',
       };
     }
     return { ok: false, message: error.message };
@@ -305,10 +287,7 @@ export async function duplicarEstrategia(
 
   const [origemRes, tiposRes, ligasRes] = await Promise.all([
     supabase.from('estrategias').select('*').eq('id', id).maybeSingle(),
-    supabase
-      .from('estrategias_tipos_aposta')
-      .select('tipo_aposta_id')
-      .eq('estrategia_id', id),
+    supabase.from('estrategias_tipos_aposta').select('tipo_aposta_id').eq('estrategia_id', id),
     supabase.from('estrategias_ligas').select('liga_id').eq('estrategia_id', id),
   ]);
 
@@ -387,10 +366,7 @@ export async function duplicarEstrategia(
 
 async function gerarNomeDuplicata(base: string, usuario_id: string): Promise<string> {
   const supabase = await createSupabaseServerClient();
-  const { data } = await supabase
-    .from('estrategias')
-    .select('nome')
-    .eq('usuario_id', usuario_id);
+  const { data } = await supabase.from('estrategias').select('nome').eq('usuario_id', usuario_id);
 
   const nomes = new Set((data ?? []).map((r) => r.nome.toLowerCase()));
   let candidato = `${base} (cópia)`;

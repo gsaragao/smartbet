@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { requireAuth, requireExecutor } from '@/lib/auth/profile';
+import { requireExecutor } from '@/lib/auth/profile';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { Database } from '@/types/supabase';
 
@@ -16,11 +16,7 @@ import {
   type BetSelectionInput,
   type PartidaInput,
 } from './schema';
-import {
-  avaliarApostaVsEstrategia,
-  type BetContext,
-  type StrategyScope,
-} from './rules-evaluator';
+import { avaliarApostaVsEstrategia, type BetContext, type StrategyScope } from './rules-evaluator';
 
 type ApostaUpdate = Database['public']['Tables']['apostas']['Update'];
 
@@ -71,10 +67,7 @@ async function validarContraEstrategia(
       .from('estrategias_tipos_aposta')
       .select('tipo_aposta_id')
       .eq('estrategia_id', input.estrategia_id),
-    supabase
-      .from('estrategias_ligas')
-      .select('liga_id')
-      .eq('estrategia_id', input.estrategia_id),
+    supabase.from('estrategias_ligas').select('liga_id').eq('estrategia_id', input.estrategia_id),
   ]);
 
   if (estrategiaRes.error || !estrategiaRes.data) {
@@ -83,9 +76,7 @@ async function validarContraEstrategia(
 
   const tipos =
     (tiposRes.data ?? []).map((r) => r.tipo_aposta_id) ??
-    (estrategiaRes.data.tipo_aposta_id != null
-      ? [estrategiaRes.data.tipo_aposta_id]
-      : []);
+    (estrategiaRes.data.tipo_aposta_id != null ? [estrategiaRes.data.tipo_aposta_id] : []);
   const ligas = (ligasRes.data ?? []).map((r) => r.liga_id);
 
   const escopo: StrategyScope = {
@@ -94,22 +85,14 @@ async function validarContraEstrategia(
     ligas_ids: ligas,
     contextos: (estrategiaRes.data.contextos ?? []) as ('pre_live' | 'ao_vivo')[],
     odd_minima:
-      estrategiaRes.data.odd_minima != null
-        ? Number(estrategiaRes.data.odd_minima)
-        : null,
+      estrategiaRes.data.odd_minima != null ? Number(estrategiaRes.data.odd_minima) : null,
     odd_maxima:
-      estrategiaRes.data.odd_maxima != null
-        ? Number(estrategiaRes.data.odd_maxima)
-        : null,
+      estrategiaRes.data.odd_maxima != null ? Number(estrategiaRes.data.odd_maxima) : null,
     minuto_minimo: estrategiaRes.data.minuto_minimo,
   };
 
   const selecoes: BetSelectionInput[] =
-    input.formato === 'multipla'
-      ? input.selecoes ?? []
-      : input.selecao
-        ? [input.selecao]
-        : [];
+    input.formato === 'multipla' ? (input.selecoes ?? []) : input.selecao ? [input.selecao] : [];
 
   const violacoes: string[] = [];
   for (const [i, sel] of selecoes.entries()) {
@@ -181,9 +164,7 @@ function inputSimplesParaPayloadRpc(input: BetInput) {
     descricao: input.descricao || null,
     observacao: input.observacao || null,
     estrategia_override: input.estrategia_override,
-    motivo_override: input.estrategia_override
-      ? input.motivo_override || null
-      : null,
+    motivo_override: input.estrategia_override ? input.motivo_override || null : null,
     edge: input.edge,
     valor_esperado: input.valor_esperado,
     selecao: selecaoParaPayload(input.selecao),
@@ -191,9 +172,7 @@ function inputSimplesParaPayloadRpc(input: BetInput) {
 }
 
 function inputMultiplaParaPayloadRpc(input: BetInput) {
-  const oddTotal = Number(
-    calcularOddTotalMultipla(input.selecoes).toFixed(3),
-  );
+  const oddTotal = Number(calcularOddTotalMultipla(input.selecoes).toFixed(3));
   return {
     banca_id: input.banca_id,
     estrategia_id: input.estrategia_id,
@@ -204,9 +183,7 @@ function inputMultiplaParaPayloadRpc(input: BetInput) {
     descricao: input.descricao || null,
     observacao: input.observacao || null,
     estrategia_override: input.estrategia_override,
-    motivo_override: input.estrategia_override
-      ? input.motivo_override || null
-      : null,
+    motivo_override: input.estrategia_override ? input.motivo_override || null : null,
     edge: input.edge,
     valor_esperado: input.valor_esperado,
     selecoes: input.selecoes.map(selecaoParaPayload),
@@ -217,9 +194,7 @@ function inputMultiplaParaPayloadRpc(input: BetInput) {
 // Criar
 // ---------------------------------------------------------------------------
 
-export async function criarAposta(
-  input: unknown,
-): Promise<ActionResult<{ id: string }>> {
+export async function criarAposta(input: unknown): Promise<ActionResult<{ id: string }>> {
   const authResult = await requireExecutor();
   if (!('id' in authResult)) return authResult;
 
@@ -304,8 +279,7 @@ export async function atualizarAposta(input: unknown): Promise<ActionResult> {
   if (atual.status !== 'pendente') {
     return {
       ok: false,
-      message:
-        'Aposta já resolvida — reabra antes de editar (disponível na próxima fatia).',
+      message: 'Aposta já resolvida — reabra antes de editar (disponível na próxima fatia).',
     };
   }
 
@@ -328,7 +302,7 @@ export async function atualizarAposta(input: unknown): Promise<ActionResult> {
   const oddTotalAtualizada =
     data.formato === 'multipla'
       ? Number(calcularOddTotalMultipla(data.selecoes).toFixed(3))
-      : data.selecao?.odd ?? 0;
+      : (data.selecao?.odd ?? 0);
 
   const patch: ApostaUpdate = {
     banca_id: data.banca_id,
@@ -340,9 +314,7 @@ export async function atualizarAposta(input: unknown): Promise<ActionResult> {
     descricao: data.descricao || null,
     observacao: data.observacao || null,
     estrategia_override: data.estrategia_override,
-    motivo_override: data.estrategia_override
-      ? data.motivo_override || null
-      : null,
+    motivo_override: data.estrategia_override ? data.motivo_override || null : null,
     edge: data.edge,
     valor_esperado: data.valor_esperado,
   };
@@ -406,9 +378,7 @@ export async function excluirAposta(id: string): Promise<ActionResult> {
 // Resolver (S2)
 // ---------------------------------------------------------------------------
 
-export async function resolverAposta(
-  input: unknown,
-): Promise<ActionResult<{ id: string }>> {
+export async function resolverAposta(input: unknown): Promise<ActionResult<{ id: string }>> {
   const authResult = await requireExecutor();
   if (!('id' in authResult)) return authResult;
 

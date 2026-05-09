@@ -27,7 +27,7 @@ const PASSWORD_RULES = [
 ] as const;
 
 export function SignUpForm({ nextUrl }: { nextUrl?: string }) {
-  const [isPending, startTransition] = React.useTransition();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
 
   const form = useForm<SignUpInput>({
@@ -38,8 +38,9 @@ export function SignUpForm({ nextUrl }: { nextUrl?: string }) {
 
   const passwordValue = useWatch({ control: form.control, name: 'password' });
 
-  const onSubmit = form.handleSubmit((values) => {
-    startTransition(async () => {
+  const onSubmit = form.handleSubmit(async (values) => {
+    setIsSubmitting(true);
+    try {
       const fd = new FormData();
       fd.set('email', values.email);
       fd.set('password', values.password);
@@ -61,7 +62,9 @@ export function SignUpForm({ nextUrl }: { nextUrl?: string }) {
       }
 
       if (result.message) toast.success(result.message);
-    });
+    } finally {
+      setIsSubmitting(false);
+    }
   });
 
   return (
@@ -80,7 +83,7 @@ export function SignUpForm({ nextUrl }: { nextUrl?: string }) {
                   autoCapitalize="none"
                   spellCheck={false}
                   placeholder="voce@email.com"
-                  disabled={isPending}
+                  disabled={isSubmitting}
                   {...field}
                 />
               </FormControl>
@@ -101,7 +104,7 @@ export function SignUpForm({ nextUrl }: { nextUrl?: string }) {
                     type={showPassword ? 'text' : 'password'}
                     autoComplete="new-password"
                     placeholder="••••••••"
-                    disabled={isPending}
+                    disabled={isSubmitting}
                     className="pr-10"
                     {...field}
                   />
@@ -112,11 +115,7 @@ export function SignUpForm({ nextUrl }: { nextUrl?: string }) {
                     aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                     tabIndex={-1}
                   >
-                    {showPassword ? (
-                      <EyeOff className="size-4" />
-                    ) : (
-                      <Eye className="size-4" />
-                    )}
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
               </FormControl>
@@ -137,7 +136,7 @@ export function SignUpForm({ nextUrl }: { nextUrl?: string }) {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   placeholder="••••••••"
-                  disabled={isPending}
+                  disabled={isSubmitting}
                   {...field}
                 />
               </FormControl>
@@ -146,14 +145,14 @@ export function SignUpForm({ nextUrl }: { nextUrl?: string }) {
           )}
         />
 
-        <Button type="submit" disabled={isPending} className="mt-2 w-full">
-          {isPending && <Loader2 className="size-4 animate-spin" />}
-          {isPending ? 'Criando conta...' : 'Criar conta'}
+        <Button type="submit" disabled={isSubmitting} className="mt-2 w-full">
+          {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+          {isSubmitting ? 'Criando conta...' : 'Criar conta'}
         </Button>
 
         <p className="text-muted-foreground text-center text-xs leading-relaxed">
-          Ao criar sua conta você concorda em apostar com responsabilidade.
-          Aposte apenas o que pode perder.
+          Ao criar sua conta você concorda em apostar com responsabilidade. Aposte apenas o que pode
+          perder.
         </p>
       </form>
     </Form>

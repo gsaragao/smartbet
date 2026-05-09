@@ -10,11 +10,7 @@ export const metadata: Metadata = {
 
 type SearchParams = { next?: string; registered?: string };
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>;
-}) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const { next, registered } = await searchParams;
 
   return (
@@ -31,7 +27,7 @@ export default async function LoginPage({
           role="status"
           className="border-win/30 bg-win-muted text-foreground rounded-md border px-3 py-2 text-sm"
         >
-          Conta criada! Confirme seu e-mail se necessário e faça login.
+          Conta criada! Faça login com seu e-mail e senha.
         </div>
       )}
 
