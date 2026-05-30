@@ -4,11 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { Logo } from '@/components/brand/logo';
-import {
-  navProgress,
-  visibleSectionsForNav,
-  type NavItem,
-} from '@/components/layout/nav-items';
+import { navProgress, visibleSectionsForNav, type NavItem } from '@/components/layout/nav-items';
 import type { Papel } from '@/lib/auth/profile';
 import { cn } from '@/lib/utils';
 
@@ -22,7 +18,7 @@ type SidebarProps = {
 export function Sidebar({ className, papel, onNavigate }: SidebarProps) {
   const pathname = usePathname();
   const sections = visibleSectionsForNav(papel);
-  const progress = navProgress(papel);
+  const progress = papel === 'admin' ? navProgress(papel) : null;
 
   return (
     <aside
@@ -69,11 +65,12 @@ export function Sidebar({ className, papel, onNavigate }: SidebarProps) {
         </div>
       </nav>
 
-      {/* Footer: compact product-progress indicator. Goal-gradient effect —
-          seeing "3/10 entregues" is more motivating than "Fase 1 · MVP". */}
-      <div className="border-sidebar-border border-t px-4 py-3">
-        <NavProgressBadge shipped={progress.shipped} total={progress.total} />
-      </div>
+      {/* Progresso do MVP: visível só para administradores (roadmap interno). */}
+      {papel === 'admin' && progress ? (
+        <div className="border-sidebar-border border-t px-4 py-3">
+          <NavProgressBadge shipped={progress.shipped} total={progress.total} />
+        </div>
+      ) : null}
     </aside>
   );
 }
@@ -142,9 +139,7 @@ function SidebarLink({
       <Icon
         className={cn(
           'size-4 shrink-0 transition-colors',
-          active
-            ? 'text-primary'
-            : 'text-muted-foreground group-hover:text-sidebar-foreground',
+          active ? 'text-primary' : 'text-muted-foreground group-hover:text-sidebar-foreground',
         )}
       />
       <span className="truncate">{item.label}</span>

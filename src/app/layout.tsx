@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono, Space_Grotesk } from 'next/font/google';
 
+import { getTheme } from '@teispace/next-themes/server';
+
 import { QueryProvider } from '@/components/providers/query-provider';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
@@ -40,15 +42,7 @@ export const metadata: Metadata = {
     'Smart Bet é o painel de controle para apostadores profissionais. Cadastre estratégias, registre apostas e acompanhe ROI, yield e drawdown em tempo real.',
   applicationName: 'Smart Bet',
   authors: [{ name: 'Smart Bet' }],
-  keywords: [
-    'apostas',
-    'estratégia',
-    'bankroll',
-    'ROI',
-    'yield',
-    'EV+',
-    'betting tracker',
-  ],
+  keywords: ['apostas', 'estratégia', 'bankroll', 'ROI', 'yield', 'EV+', 'betting tracker'],
   icons: {
     icon: '/favicon.ico',
   },
@@ -63,23 +57,30 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialTheme = await getTheme({ themes: ['light', 'dark'] });
+
   return (
     <html
       lang="pt-BR"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} h-full`}
     >
-      <body className="bg-background text-foreground flex min-h-full flex-col antialiased">
+      <body
+        className="bg-background text-foreground flex min-h-full flex-col antialiased"
+        suppressHydrationWarning
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          themes={['light', 'dark']}
+          initialTheme={initialTheme ?? undefined}
         >
           <QueryProvider>
             {children}

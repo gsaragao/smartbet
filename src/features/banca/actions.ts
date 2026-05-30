@@ -2,14 +2,10 @@
 
 import { revalidatePath } from 'next/cache';
 
-import { requireAuth, requireExecutor } from '@/lib/auth/profile';
+import { requireExecutor } from '@/lib/auth/profile';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
-import {
-  bancaSchema,
-  bancaUpdateSchema,
-  eventoBancaSchema,
-} from './schema';
+import { bancaSchema, bancaUpdateSchema, eventoBancaSchema } from './schema';
 
 export type ActionResult =
   | { ok: true }
@@ -18,9 +14,7 @@ export type ActionResult =
 const PATH_LISTA = '/banca';
 const pathDetalhe = (id: string) => `/banca/${id}`;
 
-function zodToFieldErrors(
-  error: import('zod').ZodError,
-): Record<string, string[]> {
+function zodToFieldErrors(error: import('zod').ZodError): Record<string, string[]> {
   const out: Record<string, string[]> = {};
   for (const issue of error.issues) {
     const key = issue.path.join('.') || '_';
@@ -142,19 +136,13 @@ export async function atualizarBanca(input: unknown): Promise<ActionResult> {
   return { ok: true };
 }
 
-export async function alternarAtivaBanca(
-  id: string,
-  ativa: boolean,
-): Promise<ActionResult> {
+export async function alternarAtivaBanca(id: string, ativa: boolean): Promise<ActionResult> {
   const authResult = await requireExecutor();
   if (!('id' in authResult)) return authResult;
   if (!id) return { ok: false, message: 'ID inválido.' };
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase
-    .from('bancas')
-    .update({ ativa })
-    .eq('id', id);
+  const { error } = await supabase.from('bancas').update({ ativa }).eq('id', id);
 
   if (error) return { ok: false, message: error.message };
 
@@ -180,10 +168,7 @@ export async function definirBancaPrincipal(id: string): Promise<ActionResult> {
     .eq('e_principal', true);
   if (resetError) return { ok: false, message: resetError.message };
 
-  const { error } = await supabase
-    .from('bancas')
-    .update({ e_principal: true })
-    .eq('id', id);
+  const { error } = await supabase.from('bancas').update({ e_principal: true }).eq('id', id);
   if (error) return { ok: false, message: error.message };
 
   revalidatePath(PATH_LISTA);
@@ -259,10 +244,7 @@ export async function criarEventoBanca(input: unknown): Promise<ActionResult> {
   return { ok: true };
 }
 
-export async function excluirEventoBanca(
-  id: string,
-  bancaId: string,
-): Promise<ActionResult> {
+export async function excluirEventoBanca(id: string, bancaId: string): Promise<ActionResult> {
   const authResult = await requireExecutor();
   if (!('id' in authResult)) return authResult;
   if (!id || !bancaId) return { ok: false, message: 'ID inválido.' };

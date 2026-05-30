@@ -1,13 +1,16 @@
 'use client';
 
 import * as React from 'react';
-import { ThemeProvider as NextThemesProvider, type ThemeProviderProps } from 'next-themes';
+import {
+  ThemeProvider as TeispaceThemeProvider,
+  type ThemeProviderProps,
+} from '@teispace/next-themes';
 
 /**
- * Thin wrapper around next-themes. Centralising it makes it easy to swap
- * implementations later (e.g. system-aware palette tweaks) without touching
- * every consumer.
+ * Tema global: `@teispace/next-themes` evita o aviso do React 19 com
+ * `next-themes` (script inline na árvore client). Passe `initialTheme` a
+ * partir de `getTheme()` no layout (RSC).
  */
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+  return <TeispaceThemeProvider {...props}>{children}</TeispaceThemeProvider>;
 }

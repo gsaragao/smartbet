@@ -5,11 +5,7 @@ import { z } from 'zod';
  * so validation is identical on both sides (no drift between UX and security).
  */
 
-export const emailSchema = z
-  .string()
-  .trim()
-  .min(1, 'Informe seu e-mail')
-  .email('E-mail inválido');
+export const emailSchema = z.string().trim().min(1, 'Informe seu e-mail').email('E-mail inválido');
 
 export const passwordSchema = z
   .string()
@@ -21,10 +17,18 @@ export const signInSchema = z.object({
   password: z.string().min(1, 'Informe sua senha'),
 });
 
+export const signUpPasswordSchema = passwordSchema
+  .refine((s) => /[A-Za-z]/.test(s), {
+    message: 'A senha deve conter pelo menos uma letra.',
+  })
+  .refine((s) => /\d/.test(s), {
+    message: 'A senha deve conter pelo menos um número.',
+  });
+
 export const signUpSchema = z
   .object({
     email: emailSchema,
-    password: passwordSchema,
+    password: signUpPasswordSchema,
     confirmPassword: z.string().min(1, 'Confirme sua senha'),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -34,3 +38,34 @@ export const signUpSchema = z
 
 export type SignInInput = z.infer<typeof signInSchema>;
 export type SignUpInput = z.infer<typeof signUpSchema>;
+
+/** Utilizador autenticado altera a própria senha (confirma senha atual). */
+export const changePasswordSelfSchema = z
+  .object({
+    senhaAtual: z.string().min(1, 'Informe a senha atual.'),
+    novaSenha: passwordSchema,
+    confirmarSenha: z.string().min(1, 'Confirme a nova senha.'),
+  })
+  .refine((d) => d.novaSenha === d.confirmarSenha, {
+    path: ['confirmarSenha'],
+    message: 'As senhas não conferem.',
+  })
+  .refine((d) => d.senhaAtual !== d.novaSenha, {
+    path: ['novaSenha'],
+    message: 'A nova senha deve ser diferente da atual.',
+  });
+
+/** Admin define senha de outro utilizador (Auth). */
+export const adminSetPasswordSchema = z
+  .object({
+    usuarioId: z.string().uuid('ID inválido.'),
+    novaSenha: passwordSchema,
+    confirmarSenha: z.string().min(1, 'Confirme a nova senha.'),
+  })
+  .refine((d) => d.novaSenha === d.confirmarSenha, {
+    path: ['confirmarSenha'],
+    message: 'As senhas não conferem.',
+  });
+
+export type ChangePasswordSelfInput = z.infer<typeof changePasswordSelfSchema>;
+export type AdminSetPasswordInput = z.infer<typeof adminSetPasswordSchema>;
